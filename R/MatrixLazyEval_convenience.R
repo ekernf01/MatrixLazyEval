@@ -44,5 +44,5 @@ setMethod("%*%", signature(x = "LazyMatrix", y = "ANY"       ), function(x, y)  
 setMethod("%*%", signature(x = "ANY",        y = "LazyMatrix"), function(x, y)   EvaluateLazyMatrix( y, LEFT = x ) )
 setMethod("%*%", signature(x = "LazyMatrix", y = "LazyMatrix"), function(x, y) EvaluateLazyMatrix( x, RIGHT = EvaluateLazyMatrix( y ) ) )
 
-setMethod("t",         signature(x = "LazyMatrix"), function( x ) TransposeLazyMatrix( x ) )
+setMethod("t",   signature(x = "LazyMatrix"), function( x ) TransposeLazyMatrix( x ) )
 

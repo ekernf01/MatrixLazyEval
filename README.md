@@ -1,0 +1,1 @@
+This is an R package for lazy evaluation of matrices. Please check out the vignette for examples. 
