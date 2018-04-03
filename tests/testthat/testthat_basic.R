@@ -19,6 +19,14 @@ test_that("summary_works", {
   expect_equal(summary(M_lazy), summary(M_lazy))
 })
 
+test_that("subsetting_works", {
+  expect_equal(M_lazy[1:2, 1:2], M[1:2, 1:2])
+  expect_equal(M_lazy[1:2,    ], M[1:2,    ])
+  expect_equal(M_lazy[   , 1:2], M[   , 1:2])
+  expect_equal(M_lazy[   , ], M[   , ])
+})
+
+
 test_that("transpose_works", {
   expect_equal(t(M_lazy), t(M_lazy))
 })

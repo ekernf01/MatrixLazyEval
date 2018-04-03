@@ -5,18 +5,18 @@
 \alias{EvaluateLazyMatrix}
 \title{Compute a matrix product.}
 \usage{
-EvaluateLazyMatrix(M, RIGHT = diag(1, nrow = ncol(M), ncol = ncol(M)),
-  LEFT = diag(1, nrow = nrow(M), ncol = nrow(M)))
+EvaluateLazyMatrix(M, LEFT = Matrix::Diagonal(1, n = nrow(M)),
+  RIGHT = Matrix::Diagonal(1, n = ncol(M)))
 
-EvaluateLazyMatrix(M, RIGHT = diag(1, nrow = ncol(M), ncol = ncol(M)),
-  LEFT = diag(1, nrow = nrow(M), ncol = nrow(M)))
+EvaluateLazyMatrix(M, LEFT = Matrix::Diagonal(1, n = nrow(M)),
+  RIGHT = Matrix::Diagonal(1, n = ncol(M)))
 }
 \arguments{
 \item{M}{object of class MatrixLazyEval.}
 
-\item{RIGHT}{y in xMy.}
-
 \item{LEFT}{x in xMy.}
+
+\item{RIGHT}{y in xMy.}
 
 \item{M}{object of class LazyMatrix.}
 

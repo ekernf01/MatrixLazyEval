@@ -40,9 +40,46 @@ setMethod( "colSums", signature(x = "LazyMatrix"), function( x )       rep( 1, n
 setMethod( "rowMeans", signature(x = "LazyMatrix"), function( x ) rowSums( x ) / ncol( x ) )
 setMethod( "colMeans", signature(x = "LazyMatrix"), function( x ) colSums( x ) / nrow( x ) )
 
-setMethod("%*%", signature(x = "LazyMatrix", y = "ANY"       ), function(x, y)   EvaluateLazyMatrix( x, RIGHT = y ) )
-setMethod("%*%", signature(x = "ANY",        y = "LazyMatrix"), function(x, y)   EvaluateLazyMatrix( y, LEFT = x ) )
+setMethod("%*%", signature(x = "LazyMatrix", y = "ANY"       ), function(x, y) EvaluateLazyMatrix( x, RIGHT = y ) )
+setMethod("%*%", signature(x = "ANY",        y = "LazyMatrix"), function(x, y) EvaluateLazyMatrix( y, LEFT = x ) )
 setMethod("%*%", signature(x = "LazyMatrix", y = "LazyMatrix"), function(x, y) EvaluateLazyMatrix( x, RIGHT = EvaluateLazyMatrix( y ) ) )
 
 setMethod("t",   signature(x = "LazyMatrix"), function( x ) TransposeLazyMatrix( x ) )
+
+
+idx_types = c("integer", "logical")
+for( i_type in idx_types){
+  for( j_type in idx_types){
+    ## select both
+    setMethod("[", signature(x = "LazyMatrix",
+                             i = i_type, j = j_type, drop = "ANY"),
+              function (x, i = 1:nrow(x), j = 1:ncol(x), ..., drop) {
+                ExtractElementsLazyMatrix( x, i, j, ...,  drop )
+              })
+    ## select rows
+    setMethod("[", signature(x = "LazyMatrix", i = i_type, j = "missing",
+                             drop = "ANY"),
+              function(x,i,j, ..., drop=TRUE) {
+                ExtractElementsLazyMatrix( x, i = i,  drop = drop )
+              })
+    ## select rows
+    setMethod("[", signature(x = "LazyMatrix", i = "missing", j = j_type,
+                             drop = "ANY"),
+              function(x,i,j, ..., drop=TRUE) {
+                ExtractElementsLazyMatrix( x, j = j,  drop = drop )
+              })
+    ## select neither
+    setMethod("[", signature(x = "LazyMatrix", i = "missing", j = "missing",
+                             drop = "ANY"),
+              function(x,i,j, ..., drop=TRUE) {
+                ExtractElementsLazyMatrix( x,  drop = drop )
+              })
+
+  }
+}
+
+## Send message if any of (i,j,drop) is garbage
+setMethod("[", signature(x = "LazyMatrix", i = "ANY", j = "ANY", drop = "ANY"),
+          function(x,i,j, ..., drop)
+            stop("invalid or not-yet-implemented 'LazyMatrix' subsetting"))
 

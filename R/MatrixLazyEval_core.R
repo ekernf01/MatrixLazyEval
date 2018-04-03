@@ -50,8 +50,8 @@ NewLazyMatrix = function( components, dim, eval_rule, test = T ){
 #' @export
 #'
 EvaluateLazyMatrix = function( M,
-                               LEFT  = diag(1, nrow = nrow(M), ncol = nrow(M)),
-                               RIGHT = diag(1, nrow = ncol(M), ncol = ncol(M)) ){
+                               LEFT  = Matrix::Diagonal(1, n = nrow(M) ),
+                               RIGHT  = Matrix::Diagonal(1, n = ncol(M) ) ){
   M@components$LEFT = LEFT
   M@components$RIGHT = RIGHT
   eval(parse(text=M@eval_rule), envir = M@components)
@@ -166,3 +166,14 @@ ExtendLazyMatrix = function( M, LEFT = NULL, RIGHT = NULL ){
 }
 
 
+
+ExtractElementsLazyMatrix = function( M, i = 1:nrow(M), j = 1:ncol(M), drop = T ){
+  result = EvaluateLazyMatrix( M,
+                               LEFT  = Matrix::Diagonal(1, n = nrow(M))[i, ],
+                               RIGHT = Matrix::Diagonal(1, n = ncol(M))[, j] )
+  if(drop & min(dim(result)) == 1){
+    return(c(result))
+  } else {
+    return( result )
+  }
+}
