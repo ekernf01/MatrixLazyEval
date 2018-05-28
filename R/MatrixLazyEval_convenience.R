@@ -62,7 +62,7 @@ setMethod("tcrossprod",   signature(x = "LazyMatrix", y = "missing"),
 )
 
 
-idx_types = c("integer"``, "logical")
+idx_types = c("integer", "logical")
 for( i_type in idx_types){
   for( j_type in idx_types){
     ## select both

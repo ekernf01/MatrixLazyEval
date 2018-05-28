@@ -179,30 +179,36 @@ ExtendLazyMatrix = function( M, LEFT = NULL, RIGHT = NULL ){
   # Add new matrices to the @components
   M@components = c(LEFT, M@components, RIGHT)
 
-  # Add new components to the @eval_rule.
-  # Note that this code must work when LEFT or RIGHT is null.
-  make_rule_extension = function( matrix_list, L_or_R ){
-    assertthat::assert_that( (L_or_R == "LEFT") || (L_or_R == "RIGHT") )
+  # Format new components to replace LEFT or RIGHT in the current @eval_rule.
+  # This code must work when certain inputs to the enclosing function are null.
+  make_rule_extension = function( matrix_list, is_right ){
+    assertthat::assert_that( is.logical( is_right ) )
     if( is.null( matrix_list ) ){
-      eval_rule  = L_or_R
+      rule_extension  = ifelse(is_right, "RIGHT", "LEFT")
     } else {
-      eval_rule  = paste0( names(matrix_list), collapse = " %*% " )
+      rule_extension  = paste0( names(matrix_list), collapse = " %*% " )
     }
-    if( L_or_R == "RIGHT" ){
-      eval_rule  = paste0(              eval_rule, " %*% RIGHT" )
-    } else if ( L_or_R == "LEFT" ) {
-      eval_rule  = paste0( "LEFT %*% ", eval_rule )
+    if( is_right ){
+      rule_extension  = paste0(              rule_extension, " %*% RIGHT" )
     } else {
-      stop("Uh-oh! Kaboom! Shouldn't reach here! It's matrices, not tensors! We only have left and right! \n")
+      rule_extension  = paste0( "LEFT %*% ", rule_extension )
     }
-    return( eval_rule )
+    return( rule_extension )
   }
 
-  rule_R = make_rule_extension(RIGHT, L_or_R = "RIGHT")
-  rule_L = make_rule_extension(LEFT,  L_or_R = "LEFT")
+  rule_R = make_rule_extension(RIGHT, is_right = TRUE )
+  rule_L = make_rule_extension(LEFT, is_right = FALSE )
 
   M@eval_rule = gsub( "RIGHT", rule_R, M@eval_rule )
   M@eval_rule = gsub( "LEFT",  rule_L, M@eval_rule )
+
+  # Update dimensions to reflect new multiplicands
+  if(!is.null(LEFT)){
+    M@dim[1] = nrow(LEFT[[1]])
+  }
+  if(!is.null(RIGHT)){
+    M@dim[2] = ncol(RIGHT[[length(RIGHT)]])
+  }
 
   return(M)
 }
