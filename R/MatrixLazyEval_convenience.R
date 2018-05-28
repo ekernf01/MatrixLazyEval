@@ -42,12 +42,27 @@ setMethod( "colMeans", signature(x = "LazyMatrix"), function( x ) colSums( x ) /
 
 setMethod("%*%", signature(x = "LazyMatrix", y = "ANY"       ), function(x, y) EvaluateLazyMatrix( x, RIGHT = y ) )
 setMethod("%*%", signature(x = "ANY",        y = "LazyMatrix"), function(x, y) EvaluateLazyMatrix( y, LEFT = x ) )
-setMethod("%*%", signature(x = "LazyMatrix", y = "LazyMatrix"), function(x, y) EvaluateLazyMatrix( x, RIGHT = EvaluateLazyMatrix( y ) ) )
-
+setMethod("%*%", signature(x = "LazyMatrix", y = "LazyMatrix"),
+          function(x, y)  {
+            NewLazyMatrix( components = list( x=x, y=y ),
+                           dim = c( nrow(x),
+                                    ncol(y) ),
+                           # Avoid ( x %*% y ), as it would just call this function again.
+                           eval_rule = " ( LEFT %*% x ) %*% ( y %*% RIGHT ) " ,
+                           test = F )
+          }
+)
 setMethod("t",   signature(x = "LazyMatrix"), function( x ) TransposeLazyMatrix( x ) )
+setMethod("tcrossprod",   signature(x = "LazyMatrix", y = "missing"),
+          function( x ) {
+            NewLazyMatrix( components = list("X" = x),
+                           eval_rule = " LEFT %*% t(X) %*% X %*% RIGHT ",
+                           dim = rep(ncol(x), 2), test = F )
+          }
+)
 
 
-idx_types = c("integer", "logical")
+idx_types = c("integer"``, "logical")
 for( i_type in idx_types){
   for( j_type in idx_types){
     ## select both

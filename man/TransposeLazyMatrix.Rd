@@ -7,7 +7,10 @@
 TransposeLazyMatrix(M)
 }
 \arguments{
-\item{M}{LazyMatrix}
+\item{M}{LazyMatrix
+
+Since \math{L M^T \times R = (R^TML^T)^T, can replace every occurence of LEFT
+ with t(RIGHT) and vice versa, then transpose at the end.}}
 }
 \description{
 Transpose lazily.

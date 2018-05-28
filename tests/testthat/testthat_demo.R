@@ -1,11 +1,12 @@
 context("demo")
+rm(list = ls())
 
 
 library(Matrix)
 data(CAex)
 M = rbind(CAex, CAex)
+cs = colSums( M )
 w = as.matrix( data.frame( intercept = 1, slope = 1:ncol(M) ) )
-library(MatrixLazyEval)
 
 
 

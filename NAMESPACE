@@ -2,6 +2,9 @@
 
 export(EvaluateLazyMatrix)
 export(ExtendLazyMatrix)
-export(IsValidRuleLazyMatrix)
+export(ExtractElementsLazyMatrix)
+export(HasValidRuleLazyMatrix)
 export(NewLazyMatrix)
+export(PCALazyMatrix)
 export(TestLazyMatrix)
+export(TransposeLazyMatrix)

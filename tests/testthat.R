@@ -1,4 +1,3 @@
 library(testthat)
 library(MatrixLazyEval)
-
-test_check("MatrixLazyEval")
+testthat::test_check("MatrixLazyEval")
