@@ -43,7 +43,7 @@ Suppose you wish to shift the rows of $M$ to have mean 0. One way to accomplish 
 Here's how the code looks. 
 
 ```{r, results='hold'}
-R    = matrix( nrow = nrow(M), ncol = 1, data = rowMeans( M ) )
+R    = matrix( nrow = nrow(M), ncol = 1, data = Matrix::rowMeans( M ) )
 ONES = matrix( ncol = ncol(M), nrow = 1, data = 1 )
 M_shifted = M - R %*% ONES
 M_shifted_lazy = NewLazyMatrix( components = list("M" = M, "R" = R, "ONES" = ONES ), 
@@ -87,6 +87,9 @@ N.B. Statistics nerds may notice that this example generalizes the previous exam
 Regressing out covariates is common enough to be implemented in the function `RegressOutLazily`.
 
 ```{r, results='hold'}
+X = as.matrix( data.frame( intercept = 1, slope = 1:nrow(M) ) )
+XtXinv = solve(t(X) %*% X) # this is just 2 by 2
+M_regressed = M - X %*% XtXinv %*% t(X) %*% M
 M_regressed_lazy = RegressOutLazily( M, X )
 x = rnorm( ncol( M ) )
 microbenchmark::microbenchmark({M_regressed      %*% x})
@@ -94,3 +97,12 @@ microbenchmark::microbenchmark({M_regressed_lazy %*% x})
 cat( "Results are identical to within: ", max(abs((M_regressed      %*% x)  - (M_regressed_lazy %*% x))) )
 ```
 
+You can even compute a randomized SVD on the resulting LazyMatrix. It's not exactly the same, but it's close. 
+
+```{r}
+microbenchmark::microbenchmark({irlba::irlba(M_regressed, 5)}, times = 10)
+microbenchmark::microbenchmark({RandomSVDLazyMatrix(M_regressed_lazy, 5)}, times = 10)
+svd_regular = irlba::irlba(M_regressed, 5)
+svd_lazy    = RandomSVDLazyMatrix(M_regressed_lazy, 5)
+plot( svd_regular$u[, 1], svd_lazy$u[, 1] )
+```

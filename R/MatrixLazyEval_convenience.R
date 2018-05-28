@@ -64,11 +64,9 @@ RandomSVDLazyMatrix = function( M, ncomp = 5,
   }
   seed_for_left  = matrix( rnorm( nproj_left  * dim( M )[2] ), ncol = nproj_left  ) %>% qr %>% qr.Q
   seed_for_right = matrix( rnorm( nproj_right * dim( M )[1] ), ncol = nproj_right ) %>% qr %>% qr.Q
-  mtm = tcrossprod(M) # Calls an efficient LazyMatrix method
-  mmt = tcrossprod(t(M)) # Calls yet more efficient LazyMatrix methods
   for( ii in 1:n_iter_spectrum_flatten){
-    seed_for_left  = mtm %*% seed_for_left
-    seed_for_right = mmt %*% seed_for_right
+    seed_for_left  = t(M) %*% (M %*% seed_for_left)
+    seed_for_right = M %*% (t(M) %*% seed_for_right)
   }
   projector_left  = qr.Q( qr(    M   %*% seed_for_left  ) )
   projector_right = qr.Q( qr( t( M ) %*% seed_for_right ) )

@@ -93,7 +93,7 @@ HasValidRuleLazyMatrix = function(M){
   assertthat::is.string(rule_string)
   operators = "t|-|\\(|\\)|\\+|\\*|%\\*%|LEFT|RIGHT" #escape everything but the transpose, minus, and percents
   # In this regex, will scan for longer names first, in case they contain any shorter names as substrings.
-  o = names(M@components) %>% nchar %>% order(decreasing = T)
+  o = order(nchar(names(M@components)), decreasing = T)
   component_names = paste0( names(M@components)[o], collapse = "|")
   validity_re = paste0("[", operators, "|", component_names, "|\\s]*" )
   is_alright = (trimws(gsub(validity_re, "", rule_string)) == "")
@@ -163,9 +163,10 @@ ExtendLazyMatrix = function( M, LEFT = NULL, RIGHT = NULL ){
   if(!is.list(RIGHT )){ RIGHT  = list( RIGHT ); names( RIGHT ) = nm_R }
 
   # Check for name collisions between M, LEFT, and RIGHT.
-  name_conflict_LR = intersect(names(RIGHT),        names(LEFT )) %>% paste0(collapse = " ;  ")
-  name_conflict_LM = intersect(names(M@components), names(LEFT )) %>% paste0(collapse = " ;  ")
-  name_conflict_MR = intersect(names(M@components), names(RIGHT)) %>% paste0(collapse = " ;  ")
+  names_intersect_paste = function(x, y) paste0(intersect(names(x), names(y)), collapse = " ;  ")
+  name_conflict_LR = names_intersect_paste(RIGHT,        LEFT )
+  name_conflict_LM = names_intersect_paste(M@components, LEFT )
+  name_conflict_MR = names_intersect_paste(M@components, RIGHT)
   if( name_conflict_LR != "" ){
     stop(paste0( "Name collisions between LEFT and RIGHT: ", name_conflict_LR ) )
   }
