@@ -8,8 +8,8 @@ M = Matrix::Matrix(M, sparse = T )
 M = cbind(M, M, M, M, M, M, M, M, M, M)
 dim(M)
 class(M)
-sum( M > 0 )
-sum( M > 0 ) / prod( dim(M) )
+cat("NNZ: ", sum( M > 0 ), "\n")
+cat("Proportion NZ: ", sum( M > 0 ) / prod( dim(M) ), "\n" )
 library(MatrixLazyEval)
 
 ## ------------------------------------------------------------------------

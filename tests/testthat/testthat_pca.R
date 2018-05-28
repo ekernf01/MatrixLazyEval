@@ -1,6 +1,6 @@
 rm(list = ls())
 
-context("pca")
+context("convenience")
 
 library(Matrix)
 data(CAex)

@@ -1,100 +1,86 @@
 
-#' LazyMatrix class.
+#' Replace a matrix with residuals from an OLS regression.
 #'
-#' @slot components Named list containing matrices. Anything with a matrix multiplication operator ought to work.
-#' Notably, you can put another instance of LazyMatrixEval.
-#' @slot dim Dimensions of the matrix represented here.
-#' @slot eval_rule Length-1 character describing how to compute Mx or yM for this matrix (M) given x or y.
+#' @param M Any matrix with an `%*%` operator defined. Usually from the Matrix package.
+#' @param X This must be some sort of typical matrix such that `solve(t(X) %*% X)` works.
 #'
-#' @details eval_rule may only contain `LEFT`, `RIGHT`, names in `components`, and simple arithmetic
-#' operations (`()`, `-*+`, `%*%`).
-#'  `LEFT` and `RIGHT` specify the interface with the outside world: if your object is M and you perform M %*% x,
-#'  then the value of x is substituted into RIGHT (and an identity matrix for LEFT).
-#'  Like with typical R syntax, asterisk (`*`) means componentwise multiplication, and wrapped in percents
-#'   (`%*%`) it means matrix multiplication.
+#' @export
 #'
-setClass("LazyMatrix", representation(components    = "list",
-                                      dim           = "integer",
-                                      eval_rule     = "character" ))
-
-
-
-
-
-# Code template
-# setMethod( "func_name", signature(x = "LazyMatrix"), function(M) coolStuff(M) )
-
-
-setMethod( "dim",  signature(x = "LazyMatrix"), function(x) x@dim )
-setMethod( "nrow", signature(x = "LazyMatrix"), function(x) dim(x)[1] )
-setMethod( "ncol", signature(x = "LazyMatrix"), function(x) dim(x)[2] )
-dim_or_zero = function(X) {
-  if(is.null(dim(X))){return(c(0,0))}
-  return(dim(X))
+#' @details This function returns a LazyMatrix representing the residuals after regressing M on X.
+#' If X is too big, though, you may not gain any efficiency.
+#'
+#' @md
+#'
+RegressOutLazily = function( M, X ){
+  XtXinv = solve(t(X) %*% X)
+  L = X %*% XtXinv
+  R = t(X) %*% M
+  RankOneUpdateLazily( M, L, R )
 }
-setMethod( "summary", signature(object = "LazyMatrix"), function(object) t(sapply(object@components, dim_or_zero)))
-
-setMethod( "rowSums", signature(x = "LazyMatrix"), function( x ) x %*% rep( 1, ncol( x ) )       )
-setMethod( "colSums", signature(x = "LazyMatrix"), function( x )       rep( 1, nrow( x ) ) %*% x )
-
-setMethod( "rowMeans", signature(x = "LazyMatrix"), function( x ) rowSums( x ) / ncol( x ) )
-setMethod( "colMeans", signature(x = "LazyMatrix"), function( x ) colSums( x ) / nrow( x ) )
-
-setMethod("%*%", signature(x = "LazyMatrix", y = "ANY"       ), function(x, y) EvaluateLazyMatrix( x, RIGHT = y ) )
-setMethod("%*%", signature(x = "ANY",        y = "LazyMatrix"), function(x, y) EvaluateLazyMatrix( y, LEFT = x ) )
-setMethod("%*%", signature(x = "LazyMatrix", y = "LazyMatrix"),
-          function(x, y)  {
-            NewLazyMatrix( components = list( x=x, y=y ),
-                           dim = c( nrow(x),
-                                    ncol(y) ),
-                           # Avoid ( x %*% y ), as it would just call this function again.
-                           eval_rule = " ( LEFT %*% x ) %*% ( y %*% RIGHT ) " ,
-                           test = F )
-          }
-)
-setMethod("t",   signature(x = "LazyMatrix"), function( x ) TransposeLazyMatrix( x ) )
-setMethod("tcrossprod",   signature(x = "LazyMatrix", y = "missing"),
-          function( x ) {
-            NewLazyMatrix( components = list("X" = x),
-                           eval_rule = " LEFT %*% t(X) %*% X %*% RIGHT ",
-                           dim = rep(ncol(x), 2), test = F )
-          }
-)
 
 
-idx_types = c("integer", "logical")
-for( i_type in idx_types){
-  for( j_type in idx_types){
-    ## select both
-    setMethod("[", signature(x = "LazyMatrix",
-                             i = i_type, j = j_type, drop = "ANY"),
-              function (x, i = 1:nrow(x), j = 1:ncol(x), ..., drop) {
-                ExtractElementsLazyMatrix( x, i, j, ...,  drop )
-              })
-    ## select rows
-    setMethod("[", signature(x = "LazyMatrix", i = i_type, j = "missing",
-                             drop = "ANY"),
-              function(x,i,j, ..., drop=TRUE) {
-                ExtractElementsLazyMatrix( x, i = i,  drop = drop )
-              })
-    ## select rows
-    setMethod("[", signature(x = "LazyMatrix", i = "missing", j = j_type,
-                             drop = "ANY"),
-              function(x,i,j, ..., drop=TRUE) {
-                ExtractElementsLazyMatrix( x, j = j,  drop = drop )
-              })
-    ## select neither
-    setMethod("[", signature(x = "LazyMatrix", i = "missing", j = "missing",
-                             drop = "ANY"),
-              function(x,i,j, ..., drop=TRUE) {
-                ExtractElementsLazyMatrix( x,  drop = drop )
-              })
+#' Do a low-rank update to a matrix.
+#'
+#' @param M Any matrix with an `%*%` operator defined. Usually from the Matrix package.
+#' @param L @param R  Matrices with dimensions such that M - LR works.
+#'
+#' @export
+#'
+#' @details This function returns a LazyMatrix representing M - LR.
+#' The update doesn't actually have to be low-rank, but if L and R are too big
+#' you may not gain any efficiency.
+#'
+#' @md
+#'
+RankOneUpdateLazily = function( M, L, R ){
+  if(is.vector(L)){ L = matrix(L, ncol = length(L)) }
+  if(is.vector(R)){ R = matrix(R, nrow = length(R)) }
+  assertthat::are_equal(nrow(M), ncol(L))
+  assertthat::are_equal(ncol(M), nrow(R))
+  NewLazyMatrix( components = list("M" = M, "R" = R, "L" = L ),
+                 dim = dim(M),
+                 eval_rule  = "( LEFT %*% M %*% RIGHT ) - ( LEFT %*% L ) %*% ( R %*% RIGHT ) " )
+}
 
+
+
+#' Compute randomized SVD.
+#'
+#' @param M object of class LazyMatrix.
+#' @param ncomp number of components to compute
+#' @param nproj_left  dimension of random column space to project into
+#' @param nproj_right dimension of random row    space to project into
+#' @param n_iter_spectrum_flatten How many times to multiply by M^TM to emphasize the larger
+#' singular values when forming the projectors. If you don't know what this is, don't change it.
+#'
+#' @export
+#'
+RandomSVDLazyMatrix = function( M, ncomp = 5,
+                          n_iter_spectrum_flatten = 2,
+                          nproj_left  = min( 8*ncomp, dim(M)[1] ),
+                          nproj_right = min( 8*ncomp, dim(M)[2] ) ){
+  if( !class( M ) == "LazyMatrix" ){
+    stop( "This function accepts only LazyMatrix input. Hard-working matrices need not apply.\n" )
   }
-}
+  seed_for_left  = matrix( rnorm( nproj_left  * dim( M )[2] ), ncol = nproj_left  ) %>% qr %>% qr.Q
+  seed_for_right = matrix( rnorm( nproj_right * dim( M )[1] ), ncol = nproj_right ) %>% qr %>% qr.Q
+  mtm = tcrossprod(M) # Calls an efficient LazyMatrix method
+  mmt = tcrossprod(t(M)) # Calls yet more efficient LazyMatrix methods
+  for( ii in 1:n_iter_spectrum_flatten){
+    seed_for_left  = mtm %*% seed_for_left
+    seed_for_right = mmt %*% seed_for_right
+  }
+  projector_left  = qr.Q( qr(    M   %*% seed_for_left  ) )
+  projector_right = qr.Q( qr( t( M ) %*% seed_for_right ) )
 
-## Send message if any of (i,j,drop) is garbage
-setMethod("[", signature(x = "LazyMatrix", i = "ANY", j = "ANY", drop = "ANY"),
-          function(x,i,j, ..., drop)
-            stop("invalid or not-yet-implemented 'LazyMatrix' subsetting"))
+  Z = EvaluateLazyMatrix( M,
+                          LEFT  = t(projector_left),
+                          RIGHT  = projector_right )
+
+
+  svd = irlba::irlba( Z, nv = ncomp )
+  svd$u = projector_left %*% svd$u
+  svd$v = projector_right %*% svd$v
+  return( svd )
+}
 

@@ -12,7 +12,7 @@
 
 <meta name="author" content="Eric Kernfeld" />
 
-<meta name="date" content="2018-04-02" />
+<meta name="date" content="2018-05-28" />
 
 <title>LazyMatrix Demo</title>
 
@@ -70,14 +70,14 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <h1 class="title toc-ignore">LazyMatrix Demo</h1>
 <h4 class="author"><em>Eric Kernfeld</em></h4>
-<h4 class="date"><em>2018-04-02</em></h4>
+<h4 class="date"><em>2018-05-28</em></h4>
 
 
 
 <div id="an-introduction-to-the-lazymatrix-package" class="section level3">
 <h3>An introduction to the <code>LazyMatrix</code> package</h3>
 <p>Sometimes it doesn’t make sense to store your matrices explicitly. <code>LazyMatrix</code> allows you to store them in clever ways that <em>save memory</em> and allow for <em>fast matrix-vector multiplication</em>. In turn, this facilitates speedups for algorithms that only require matrix-vector products – for example, the very popular iteratively restarted lanczos bidiagonalization often used for PCA.</p>
-<p>In the following examples, you start with a large, sparse matrix <span class="math inline">\(M\)</span>, and you want to perform simple operations without causing it to become dense. This vignette will compare the performance of <code>LazyMatrix</code> against a naive approach using only the <code>Matrix</code> package. For the demo data, you’ll need the R package <code>MAST</code>.</p>
+<p>In the following examples, you start with a large, sparse matrix <span class="math inline">\(M\)</span>, and you want to perform simple operations without causing it to become dense. This vignette will compare the performance of <code>LazyMatrix</code> against a naive approach using only the <code>Matrix</code> package. For the demo data, you’ll need the R package <code>MAST</code>. This chunk then creates a large, sparse matrix.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(Matrix)
 <span class="kw">data</span>(CAex)
 <span class="co">#M = CAex</span>
@@ -91,10 +91,10 @@ M =<span class="st"> </span><span class="kw">cbind</span>(M, M, M, M, M, M, M, M
 <pre><code>## [1] &quot;dgCMatrix&quot;
 ## attr(,&quot;package&quot;)
 ## [1] &quot;Matrix&quot;</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">sum</span>( M <span class="op">&gt;</span><span class="st"> </span><span class="dv">0</span> )</code></pre></div>
-<pre><code>## [1] 66990</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">sum</span>( M <span class="op">&gt;</span><span class="st"> </span><span class="dv">0</span> ) <span class="op">/</span><span class="st"> </span><span class="kw">prod</span>( <span class="kw">dim</span>(M) )</code></pre></div>
-<pre><code>## [1] 0.004280533</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">cat</span>(<span class="st">&quot;NNZ: &quot;</span>, <span class="kw">sum</span>( M <span class="op">&gt;</span><span class="st"> </span><span class="dv">0</span> ), <span class="st">&quot;</span><span class="ch">\n</span><span class="st">&quot;</span>)</code></pre></div>
+<pre><code>## NNZ:  66000</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">cat</span>(<span class="st">&quot;Proportion NZ: &quot;</span>, <span class="kw">sum</span>( M <span class="op">&gt;</span><span class="st"> </span><span class="dv">0</span> ) <span class="op">/</span><span class="st"> </span><span class="kw">prod</span>( <span class="kw">dim</span>(M) ), <span class="st">&quot;</span><span class="ch">\n</span><span class="st">&quot;</span> )</code></pre></div>
+<pre><code>## Proportion NZ:  0.004217274</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(MatrixLazyEval)</code></pre></div>
 <div id="example" class="section level5">
 <h5>Example</h5>
@@ -106,22 +106,22 @@ M_shifted_lazy =<span class="st"> </span><span class="kw">NewLazyMatrix</span>( 
                                 <span class="dt">dim =</span> <span class="kw">dim</span>(M),
                                 <span class="dt">eval_rule  =</span> <span class="st">&quot;(LEFT %*% M %*% RIGHT) - (LEFT %*% R) %*% (ONES %*% RIGHT)&quot;</span> )
 <span class="kw">object.size</span>(M_shifted)</code></pre></div>
-<pre><code>## 58427744 bytes</code></pre>
+<pre><code>## 58393184 bytes</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">object.size</span>(M_shifted_lazy)</code></pre></div>
-<pre><code>## 1898264 bytes</code></pre>
+<pre><code>## 1886384 bytes</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">x =<span class="st"> </span><span class="kw">rnorm</span>( <span class="kw">ncol</span>( M ) )
 microbenchmark<span class="op">::</span><span class="kw">microbenchmark</span>({M_shifted      <span class="op">%*%</span><span class="st"> </span>x})</code></pre></div>
 <pre><code>## Unit: milliseconds
-##                     expr      min      lq     mean  median      uq
-##  {     M_shifted %*% x } 9.555324 9.96393 10.62141 10.2791 10.6896
+##                     expr      min       lq     mean   median      uq
+##  {     M_shifted %*% x } 10.09204 10.84605 11.68688 11.41442 12.2395
 ##       max neval
-##  15.00046   100</code></pre>
+##  15.68459   100</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">microbenchmark<span class="op">::</span><span class="kw">microbenchmark</span>({M_shifted_lazy <span class="op">%*%</span><span class="st"> </span>x})</code></pre></div>
 <pre><code>## Unit: milliseconds
 ##                          expr      min       lq     mean   median       uq
-##  {     M_shifted_lazy %*% x } 2.463883 2.746162 2.975337 2.843825 3.008402
+##  {     M_shifted_lazy %*% x } 2.844461 3.086027 3.419624 3.315549 3.608319
 ##       max neval
-##  4.598155   100</code></pre>
+##  4.820838   100</code></pre>
 </div>
 <div id="example-1" class="section level5">
 <h5>Example</h5>
@@ -136,25 +136,20 @@ M_regressed_lazy =<span class="st"> </span><span class="kw">NewLazyMatrix</span>
 <span class="kw">object.size</span>(M_regressed)</code></pre></div>
 <pre><code>## 126149672 bytes</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">object.size</span>(M_regressed_lazy)</code></pre></div>
-<pre><code>## 2021912 bytes</code></pre>
+<pre><code>## 2010032 bytes</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">x =<span class="st"> </span><span class="kw">rnorm</span>( <span class="kw">ncol</span>( M ) )
 microbenchmark<span class="op">::</span><span class="kw">microbenchmark</span>({M_regressed      <span class="op">%*%</span><span class="st"> </span>x})</code></pre></div>
 <pre><code>## Unit: milliseconds
 ##                       expr      min       lq     mean   median       uq
-##  {     M_regressed %*% x } 10.36243 11.26269 11.97331 11.58027 11.93941
+##  {     M_regressed %*% x } 10.86451 11.21924 12.01907 11.46063 12.95761
 ##       max neval
-##  16.82672   100</code></pre>
+##  16.14726   100</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">microbenchmark<span class="op">::</span><span class="kw">microbenchmark</span>({M_regressed_lazy <span class="op">%*%</span><span class="st"> </span>x})</code></pre></div>
 <pre><code>## Unit: milliseconds
-##                            expr      min       lq   mean   median       uq
-##  {     M_regressed_lazy %*% x } 4.059223 4.353608 4.6321 4.474371 4.649253
-##       max neval
-##  6.900868   100</code></pre>
-</div>
-<div id="details" class="section level5">
-<h5>Details</h5>
-<p>(This section in progress.)</p>
-<p>Although using a <code>LazyMatrix</code> can slow down selection of subsets – much like an insert-favorite-procrastination-stereotype-here, everything is done at the last possible moment</p>
+##                            expr      min       lq     mean   median
+##  {     M_regressed_lazy %*% x } 4.377933 4.699129 4.902074 4.814926
+##       uq      max neval
+##  4.98879 6.335023   100</code></pre>
 </div>
 </div>
 

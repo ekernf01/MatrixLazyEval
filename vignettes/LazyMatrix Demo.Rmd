@@ -11,12 +11,18 @@ vignette: >
 
 ### An introduction to the `LazyMatrix` package
 
-Sometimes it doesn't make sense to store your matrices explicitly. `LazyMatrix` allows you to store them in clever ways that *save memory* and allow for *fast matrix-vector multiplication*.  In turn, this facilitates speedups for algorithms that only require matrix-vector products -- for example, the very popular iteratively restarted lanczos bidiagonalization often used for PCA. 
+Sometimes it doesn't make sense to store your matrices explicitly. `LazyMatrix` allows you to store them in clever ways that *save memory* and allow for *fast matrix-vector multiplication*.  In turn, this facilitates speedups for algorithms that only require matrix-vector products -- for example, Facebook's randomized PCA. 
 
-In the following examples, you start with a large, sparse matrix $M$, and you want to perform simple operations without causing it to become dense. This vignette will compare the performance of `LazyMatrix` against a naive approach using only the `Matrix` package. For the demo data, you'll need the R package `MAST`.
+In the following examples, you start with a large, sparse matrix $M$, and you want to perform simple operations without causing it to become dense. This vignette will compare the performance of `LazyMatrix` against a dense-matrix approach using only the `Matrix` package. 
+
+##### Setup
+
+For the demo data, you'll need the R package `MAST`. This chunk then creates a large, sparse matrix.
 
 ```{r}
+library(MAST)
 library(Matrix)
+library(MatrixLazyEval)
 data(CAex)
 #M = CAex
 M = t(MAST::maits$expressionmat) 
@@ -25,16 +31,18 @@ M = Matrix::Matrix(M, sparse = T )
 M = cbind(M, M, M, M, M, M, M, M, M, M)
 dim(M)
 class(M)
-sum( M > 0 )
-sum( M > 0 ) / prod( dim(M) )
-library(MatrixLazyEval)
+cat("NNZ: ", sum( M > 0 ), "\n")
+cat("Proportion NZ: ", sum( M > 0 ) / prod( dim(M) ), "\n" )
+cat("Dimensions: ", dim( M ), "\n" )
 ```
 
-##### Example
+##### Teaching Example
 
-You wish to shift the rows of $M$ to have mean 0. One way to accomplish this is to subtract a matrix $RE$ where $R\in \mathbb{R^{m\times 1}}$ contains the row-means in a column and $E\in \mathbb{R^{1\times n}}$ contains just 1's. Using the `LEFT` and `RIGHT` keywords inside the evaluation rule, you can enforce that evaluation is done efficiently, without explicitly forming the dense and painfully redundant matrix $RE$. In other words, always do $xMy + (xR)(Ey)$ rather than $x(M + RE)y$.
+Suppose you wish to shift the rows of $M$ to have mean 0. One way to accomplish this is to subtract a matrix $RE$ where $R\in \mathbb{R^{m\times 1}}$ contains the row-means in a column and $E\in \mathbb{R^{1\times n}}$ contains just 1's. Using the `LEFT` and `RIGHT` keywords inside the evaluation rule, you can enforce that evaluation is done efficiently, without explicitly forming the dense and painfully redundant matrix $RE$. In other words, always do $xMy - (xR)(Ey)$ rather than $x(M - RE)y$. 
 
-```{r}
+Here's how the code looks. 
+
+```{r, results='hold'}
 R    = matrix( nrow = nrow(M), ncol = 1, data = rowMeans( M ) )
 ONES = matrix( ncol = ncol(M), nrow = 1, data = 1 )
 M_shifted = M - R %*% ONES
@@ -46,13 +54,16 @@ object.size(M_shifted_lazy)
 x = rnorm( ncol( M ) )
 microbenchmark::microbenchmark({M_shifted      %*% x})
 microbenchmark::microbenchmark({M_shifted_lazy %*% x})
+cat( "Results are identical to within: ", max(abs((M_shifted      %*% x)  - (M_shifted_lazy %*% x))) )
 ```
 
-##### Example
+##### Teaching Example
 
-You wish to replace $M$ with residuals from a regression with a few covariates $X$, which means you need $Z \equiv M - X(X^TX)^{-1}X^TM$. With relatively few columns in $X$, it's much faster to do $wMy - (wX(X^TX)^{-1})(X^TMy)$ than $M - X(X^TX)^{-1}X^TM$.
+Suppose you wish to replace $M$ with residuals from a regression with a few covariates $X$, which means you need to compute $Z \equiv M - X(X^TX)^{-1}X^TM$. If $X$ has relatively few columns, it's much faster to do $wMy - (wX(X^TX)^{-1})(X^TMy)$ than $M - (X(X^TX)^{-1}X^T) M$. 
 
-```{r}
+Here's how you could do this from scratch. (But, check out the next example too, because you don't have to do it from scratch every time.)
+
+```{r, results='hold'}
 
 X = as.matrix( data.frame( intercept = 1, slope = 1:nrow(M) ) )
 XtXinv = solve(t(X) %*% X) # this is just 2 by 2
@@ -66,5 +77,20 @@ object.size(M_regressed_lazy)
 x = rnorm( ncol( M ) )
 microbenchmark::microbenchmark({M_regressed      %*% x})
 microbenchmark::microbenchmark({M_regressed_lazy %*% x})
+cat( "Results are identical to within: ", max(abs((M_regressed      %*% x)  - (M_regressed_lazy %*% x))) )
+```
+
+N.B. Statistics nerds may notice that this example generalizes the previous example -- subtracting the row-wise mean is equivalent to regressing out a constant. This is envisioned to be an especially common use case for MatrixLazyEval ... 
+
+##### Real Usage Example 
+
+Regressing out covariates is common enough to be implemented in the function `RegressOutLazily`.
+
+```{r, results='hold'}
+M_regressed_lazy = RegressOutLazily( M, X )
+x = rnorm( ncol( M ) )
+microbenchmark::microbenchmark({M_regressed      %*% x})
+microbenchmark::microbenchmark({M_regressed_lazy %*% x})
+cat( "Results are identical to within: ", max(abs((M_regressed      %*% x)  - (M_regressed_lazy %*% x))) )
 ```
 
