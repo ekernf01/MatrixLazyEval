@@ -45,7 +45,7 @@ NewLazyMatrix = function( components, dim, eval_rule, test = T ){
   }
 
   # Make, test, return
-  M = new("LazyMatrix")
+  M = methods::new("LazyMatrix")
   M@components = components
   M@dim = dim
   M@eval_rule = eval_rule

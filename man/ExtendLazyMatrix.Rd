@@ -11,7 +11,7 @@ ExtendLazyMatrix(M, LEFT = NULL, RIGHT = NULL)
 
 \item{LEFT}{@param RIGHT Lists of matrices to pre- and post-multiply.
 Everything is done left to right, so if these contain X, Y (LEFT) and Z, W (RIGHT), the result will represent
- XYMZW .}
+ XYMZW . If these are not lists, they will be wrapped in lists and named using deparse(substitute()).}
 }
 \description{
 Extend a LazyMatrix matrix M symbolically, without performing any calculations.
