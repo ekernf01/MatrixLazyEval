@@ -9,7 +9,7 @@ ExtendLazyMatrix(M, LEFT = NULL, RIGHT = NULL)
 \arguments{
 \item{M}{LazyMatrix to be extended.}
 
-\item{LEFT}{@param RIGHT Lists of matrices to pre- and post-multiply.
+\item{LEFT, RIGHT}{Lists of matrices to pre- and post-multiply.
 Everything is done left to right, so if these contain X, Y (LEFT) and Z, W (RIGHT), the result will represent
  XYMZW . If these are not lists, they will be wrapped in lists and named using deparse(substitute()).}
 }

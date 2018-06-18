@@ -7,9 +7,9 @@
 RegressOutLazily(M, X)
 }
 \arguments{
-\item{M}{Any matrix with an \code{%*%} operator defined. Usually from the Matrix package.}
+\item{M}{Any matrix with a multiplication operator defined. Usually from the Matrix package.}
 
-\item{X}{This must be some sort of typical matrix such that \code{solve(t(X) %*% X)} works.}
+\item{X}{This must be some sort of typical matrix such that \code{solve(t(X) \%*\% X)} works.}
 }
 \description{
 Replace a matrix with residuals from an OLS regression.

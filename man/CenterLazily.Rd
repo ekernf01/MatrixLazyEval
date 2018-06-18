@@ -7,7 +7,7 @@
 CenterLazily(M, do_rows = T)
 }
 \arguments{
-\item{M}{Any matrix with an \code{%*%} operator and nrow/ncol methods defined. Usually from the Matrix package.}
+\item{M}{Any matrix with a multiplication operator and nrow/ncol methods defined. Usually from the Matrix package.}
 
 \item{do_rows}{If true, the rows are centered so every row has mean 0.
 If false, the columns are centered so every column has mean 0.}

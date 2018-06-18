@@ -9,7 +9,9 @@ ExtractElementsLazyMatrix(M, i = 1:nrow(M), j = 1:ncol(M), drop = T)
 \arguments{
 \item{M}{LazyMatrix}
 
-\item{i}{@param j Integer vectors.}
+\item{i, j}{Integer vectors.}
+
+\item{drop}{If TRUE, return something 1d. Otherwise, return something 2d.}
 }
 \description{
 Evaluate elements of a LazyMatrix.

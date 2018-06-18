@@ -7,15 +7,15 @@
 RankOneUpdateLazily(M, L, R)
 }
 \arguments{
-\item{M}{Any matrix with an \code{%*%} operator defined. Usually from the Matrix package.}
+\item{M}{Any matrix with a multiplication operator defined. Usually from the Matrix package.}
 
-\item{L}{@param R  Matrices with dimensions such that M - LR works.}
+\item{L, R}{Matrices with dimensions such that \math{M - LR} works.}
 }
 \description{
 Do a low-rank update to a matrix.
 }
 \details{
-This function returns a LazyMatrix representing M - LR.
+This function returns a LazyMatrix representing \math{M - LR}.
 The update doesn't actually have to be low-rank, but if L and R are too big
 you may not gain any efficiency.
 }

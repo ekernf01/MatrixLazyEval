@@ -1,16 +1,23 @@
 Package: MatrixLazyEval
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Lazy evaluation for cheap storage and fast operations with sparse matrices
 Version: 0.1.0
-Author: Who wrote it
-Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
-License: What license is it under?
+Author: Eric Kernfeld
+Maintainer: The package maintainer <eric.kern13@gmail.com>
+Description: MatrixLazyEval lets you perform operations cheaply with large sparse matrices.  
+    For example, you can subtract the mean (or predictions from an OLS regression) from each 
+    row or column without explicitly storing the resulting dense matrix. You can go on to 
+    compute e.g. and SVD of the result.
+License: GPL-3 | file LICENSE
 Encoding: UTF-8
 LazyData: true
+Imports: Matrix, 
+    assertthat
 Suggests: knitr,
     rmarkdown,
-    testthat
+    testthat,
+	irlba, 
+	MAST,
+	microbenchmark
 VignetteBuilder: knitr
 RoxygenNote: 6.0.1

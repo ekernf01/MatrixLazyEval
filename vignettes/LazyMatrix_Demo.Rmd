@@ -19,7 +19,7 @@ In the following examples, you start with a large, sparse matrix $M$, and you wa
 
 For the demo data, you'll need the R package `MAST`. This chunk then creates a large, sparse matrix.
 
-```{r}
+```{r setup}
 library(MAST)
 library(Matrix)
 library(MatrixLazyEval)

@@ -7,7 +7,7 @@
 ScaleLazily(M, do_rows = T, desired_sum = 1)
 }
 \arguments{
-\item{M}{Any matrix with an \code{%*%} operator and nrow/ncol methods defined. Usually from the Matrix package.}
+\item{M}{Any matrix with a multiplication operator and nrow/ncol methods defined. Usually from the Matrix package.}
 
 \item{do_rows}{If true, the rows are scaled so every row has the desired sum.
 If false, the columns are centered so every column has the desired sum.}

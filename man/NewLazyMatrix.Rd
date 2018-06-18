@@ -9,7 +9,7 @@ NewLazyMatrix(components, dim, eval_rule, test = T)
 \arguments{
 \item{components}{Named list containing matrices. Anything with a matrix multiplication operator ought to work.
 Notably, you can put another instance of LazyMatrixEval.
-Names should come out unscathed when you do make.names to them, and they may not include `t` (reserved for the transpose).}
+Names should come out unscathed when you do \code{make.names} to them.}
 
 \item{dim}{Length-2 integer vector giving dimensions of final object.}
 
@@ -21,10 +21,10 @@ Names should come out unscathed when you do make.names to them, and they may not
 Return an empty LazyMatrix.
 }
 \details{
-eval_rule may only contain `LEFT`, `RIGHT`, names in `components`, and simple arithmetic
-operations (`()`, `t`, `-*+`, `%*%`).
- `LEFT` and `RIGHT` specify the interface with the outside world: if your object is M and you perform M %*% x,
+eval_rule may only contain 'LEFT', 'RIGHT', names in 'components', and simple arithmetic
+operations \code{ ( ) t - * +  \%*\% }.
+ 'LEFT' and 'RIGHT' specify the interface with the outside world: if your object is M and you perform \code{M \%*\% x},
  then the value of x is substituted into RIGHT (and an identity matrix for LEFT).
- Like with typical R syntax, asterisk (`*`) means componentwise multiplication, and wrapped in percents
-  (`%*%`) it means matrix multiplication.
+ Like with typical R syntax, asterisk (*) means componentwise multiplication, and wrapped in percents
+  (\code{\%*\%}) it means matrix multiplication.
 }

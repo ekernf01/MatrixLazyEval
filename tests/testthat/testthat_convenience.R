@@ -5,7 +5,7 @@ context("convenience")
 library(Matrix)
 data(CAex)
 M = rbind(CAex, CAex)
-M = matrix(rnorm(prod(dim(M))), nrow = nrow(M))
+M = matrix(stats::rnorm(prod(dim(M))), nrow = nrow(M))
 
 M_lazy = NewLazyMatrix( components = list("M" = M ),
                         dim = dim(M),
@@ -16,14 +16,14 @@ testthat::test_that("RankOneUpdateLazily", {
   R = as.matrix( data.frame( intercept = 1, slope = 1:ncol(M) ) ) %>% t
   M_updated = M -  L %*% R
   M_updated_lazy = RankOneUpdateLazily( M, L, R )
-  x = rnorm( ncol( M ) )
+  x = stats::rnorm( ncol( M ) )
   expect_lt(abs(max(M_updated %*% x - M_updated_lazy %*% x)), 1e-10)
 
   L = 1:nrow(M)
   R = 1:ncol(M)
   M_updated = M -  L %o% R
   M_updated_lazy = RankOneUpdateLazily( M, L, R )
-  x = rnorm( ncol( M ) )
+  x = stats::rnorm( ncol( M ) )
   expect_lt(abs(max(M_updated %*% x - M_updated_lazy %*% x)), 1e-10)
 } )
 
@@ -33,7 +33,7 @@ testthat::test_that("RegressOutLazily", {
   XtXinv = solve(t(X) %*% X) # this is just 2 by 2
   M_regressed = M - X %*% XtXinv %*% t(X) %*% M
   M_regressed_lazy = RegressOutLazily( M, X )
-  x = rnorm( ncol( M ) )
+  x = stats::rnorm( ncol( M ) )
   expect_lt(abs(max(M_regressed %*% x - M_regressed_lazy %*% x)), 1e-10)
 } )
 
@@ -41,7 +41,7 @@ testthat::test_that("RegressOutLazily", {
 testthat::test_that("CenterLazily", {
   M_regressed = sweep( M , MARGIN = 1, rowMeans(M), "-" )
   M_regressed_lazy = CenterLazily( M )
-  x = rnorm( ncol( M ) )
+  x = stats::rnorm( ncol( M ) )
   expect_lt(abs(max(M_regressed %*% x - M_regressed_lazy %*% x)), 1e-10)
 } )
 
@@ -49,7 +49,7 @@ testthat::test_that("CenterLazily", {
 testthat::test_that("ScaleLazily", {
   M_regressed = sweep( M , MARGIN = 1, rowSums(M), "/" )
   M_regressed_lazy = ScaleLazily( M )
-  x = rnorm( ncol( M ) )
+  x = stats::rnorm( ncol( M ) )
   expect_lt(abs(max(M_regressed %*% x - M_regressed_lazy %*% x)), 1e-10)
 } )
 

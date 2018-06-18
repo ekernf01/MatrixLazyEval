@@ -8,12 +8,12 @@
 LazyMatrix class.
 }
 \details{
-eval_rule may only contain `LEFT`, `RIGHT`, names in `components`, and simple arithmetic
-operations (`()`, `-*+`, `%*%`).
- `LEFT` and `RIGHT` specify the interface with the outside world: if your object is M and you perform M %*% x,
+eval_rule may only contain LEFT, RIGHT, names in \code{components}, and simple arithmetic
+operations \code{(), -*+, \%*\% }.
+ LEFT and RIGHT specify the interface with the outside world: if your object is M and you perform \code{M \%*\% x},
  then the value of x is substituted into RIGHT (and an identity matrix for LEFT).
- Like with typical R syntax, asterisk (`*`) means componentwise multiplication, and wrapped in percents
-  (`%*%`) it means matrix multiplication.
+ Like with typical R syntax, asterisk (*) means componentwise multiplication, and wrapped in percents
+  (\code{\%*\%}) it means matrix multiplication.
 }
 \section{Slots}{
 

@@ -4,17 +4,18 @@ requireNamespace("Matrix")
 #'
 #' @param components Named list containing matrices. Anything with a matrix multiplication operator ought to work.
 #' Notably, you can put another instance of LazyMatrixEval.
-#' Names should come out unscathed when you do make.names to them, and they may not include `t` (reserved for the transpose).
+#' Names should come out unscathed when you do \code{make.names} to them.
 #' @param dim Length-2 integer vector giving dimensions of final object.
 #' @param eval_rule Length-1 character describing how to compute Mx or yM for this matrix (M) given x or y.
 #' @param test Logical. If TRUE (default), object is tested immediately upon initialization.
 #'
-#' @details eval_rule may only contain `LEFT`, `RIGHT`, names in `components`, and simple arithmetic
-#' operations (`()`, `t`, `-*+`, `%*%`).
-#'  `LEFT` and `RIGHT` specify the interface with the outside world: if your object is M and you perform M %*% x,
+#' @details eval_rule may only contain 'LEFT', 'RIGHT', names in 'components', and simple arithmetic
+#' operations \code{ ( ) t - * +  \%*\% }.
+#'  'LEFT' and 'RIGHT' specify the interface with the outside world: if your object is M and you perform \code{M \%*\% x},
 #'  then the value of x is substituted into RIGHT (and an identity matrix for LEFT).
-#'  Like with typical R syntax, asterisk (`*`) means componentwise multiplication, and wrapped in percents
-#'   (`%*%`) it means matrix multiplication.
+#'  Like with typical R syntax, asterisk (*) means componentwise multiplication, and wrapped in percents
+#'   (\code{\%*\%}) it means matrix multiplication.
+#'
 #'
 #' @export
 #'
@@ -113,15 +114,16 @@ HasValidRuleLazyMatrix = function(M){
 #'
 TestLazyMatrix = function( M, seed = 0 ){
   set.seed(seed)
-  y = rnorm(ncol(M))
-  x = rnorm(nrow(M))
+  y = stats::rnorm(ncol(M))
+  x = stats::rnorm(nrow(M))
   testthat::expect_equal( dim(M %*% y)[1], dim(M)[1] )
   testthat::expect_equal( dim(x %*% M)[2], dim(M)[2] )
   testthat::expect_equal( length(c(EvaluateLazyMatrix( M, LEFT = x, RIGHT = y ))), 1 )
   return()
 }
 
-
+# Since L M^T R = (R^T M L^T)^T}, can replace every occurence of LEFT
+#  with t(RIGHT) and vice versa, then transpose everything at the end.
 TransposeRule = function( eval_rule ){
   eval_rule = gsub( "LEFT", "TRANSPOSE_TEMP",     eval_rule )
   eval_rule = gsub( "RIGHT", "t(LEFT)",           eval_rule )
@@ -130,12 +132,10 @@ TransposeRule = function( eval_rule ){
   return(eval_rule)
 }
 
-#' Transpose lazily.
+#' Transpose lazily / implicitly.
 #'
 #' @param M LazyMatrix
 #'
-#' Since \math{L M^T \times R = (R^TML^T)^T, can replace every occurence of LEFT
-#'  with t(RIGHT) and vice versa, then transpose at the end.}
 #' @export
 #'
 TransposeLazyMatrix = function( M ){
@@ -150,9 +150,10 @@ TransposeLazyMatrix = function( M ){
 #' Extend a LazyMatrix matrix M symbolically, without performing any calculations.
 #'
 #' @param M LazyMatrix to be extended.
-#' @param LEFT @param RIGHT Lists of matrices to pre- and post-multiply.
+#' @param LEFT,RIGHT Lists of matrices to pre- and post-multiply.
 #' Everything is done left to right, so if these contain X, Y (LEFT) and Z, W (RIGHT), the result will represent
 #'  XYMZW . If these are not lists, they will be wrapped in lists and named using deparse(substitute()).
+#'
 #' @export
 #'
 ExtendLazyMatrix = function( M, LEFT = NULL, RIGHT = NULL ){
@@ -218,7 +219,8 @@ ExtendLazyMatrix = function( M, LEFT = NULL, RIGHT = NULL ){
 #' Evaluate elements of a LazyMatrix.
 #'
 #' @param M LazyMatrix
-#' @param i @param j Integer vectors.
+#' @param i,j Integer vectors.
+#' @param drop If TRUE, return something 1d. Otherwise, return something 2d.
 #'
 #' @export
 #'

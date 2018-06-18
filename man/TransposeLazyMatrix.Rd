@@ -2,16 +2,13 @@
 % Please edit documentation in R/MatrixLazyEval_core.R
 \name{TransposeLazyMatrix}
 \alias{TransposeLazyMatrix}
-\title{Transpose lazily.}
+\title{Transpose lazily / implicitly.}
 \usage{
 TransposeLazyMatrix(M)
 }
 \arguments{
-\item{M}{LazyMatrix
-
-Since \math{L M^T \times R = (R^TML^T)^T, can replace every occurence of LEFT
- with t(RIGHT) and vice versa, then transpose at the end.}}
+\item{M}{LazyMatrix}
 }
 \description{
-Transpose lazily.
+Transpose lazily / implicitly.
 }
