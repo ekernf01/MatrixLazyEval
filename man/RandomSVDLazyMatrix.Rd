@@ -13,7 +13,7 @@ RandomSVDLazyMatrix(M, ncomp = 5, n_iter_spectrum_flatten = 2,
 
 \item{ncomp}{number of components to compute}
 
-\item{n_iter_spectrum_flatten}{How many times to multiply by \math{M^TM} to emphasize the larger
+\item{n_iter_spectrum_flatten}{How many times to multiply by \eqn{M^TM} to emphasize the larger
 singular values when forming the projectors. If you don't know what this is, don't change it.}
 
 \item{nproj_left}{dimension of random column space to project into}

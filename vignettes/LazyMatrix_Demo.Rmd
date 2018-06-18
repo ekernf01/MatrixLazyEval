@@ -23,6 +23,11 @@ For the demo data, you'll need the R package `MAST`. This chunk then creates a l
 library(MAST)
 library(Matrix)
 library(MatrixLazyEval)
+if(require("microbenchmark")){ 
+  mb = microbenchmark::microbenchmark 
+} else {
+  mb = function( expr, ... ) try( expr )
+}
 data(CAex)
 #M = CAex
 M = t(MAST::maits$expressionmat) 
@@ -52,8 +57,8 @@ M_shifted_lazy = NewLazyMatrix( components = list("M" = M, "R" = R, "ONES" = ONE
 object.size(M_shifted)
 object.size(M_shifted_lazy)
 x = rnorm( ncol( M ) )
-microbenchmark::microbenchmark({M_shifted      %*% x})
-microbenchmark::microbenchmark({M_shifted_lazy %*% x})
+mb({M_shifted      %*% x})
+mb({M_shifted_lazy %*% x})
 cat( "Results are identical to within: ", max(abs((M_shifted      %*% x)  - (M_shifted_lazy %*% x))) )
 ```
 
@@ -75,8 +80,8 @@ M_regressed_lazy = NewLazyMatrix( components = list("M" = M, "X" = X, "XtXinv" =
 object.size(M_regressed)
 object.size(M_regressed_lazy)
 x = rnorm( ncol( M ) )
-microbenchmark::microbenchmark({M_regressed      %*% x})
-microbenchmark::microbenchmark({M_regressed_lazy %*% x})
+mb({M_regressed      %*% x})
+mb({M_regressed_lazy %*% x})
 cat( "Results are identical to within: ", max(abs((M_regressed      %*% x)  - (M_regressed_lazy %*% x))) )
 ```
 
@@ -92,16 +97,16 @@ XtXinv = solve(t(X) %*% X) # this is just 2 by 2
 M_regressed = M - X %*% XtXinv %*% t(X) %*% M
 M_regressed_lazy = RegressOutLazily( M, X )
 x = rnorm( ncol( M ) )
-microbenchmark::microbenchmark({M_regressed      %*% x})
-microbenchmark::microbenchmark({M_regressed_lazy %*% x})
+mb({M_regressed      %*% x})
+mb({M_regressed_lazy %*% x})
 cat( "Results are identical to within: ", max(abs((M_regressed      %*% x)  - (M_regressed_lazy %*% x))) )
 ```
 
 You can even compute a randomized SVD on the resulting LazyMatrix. It's not exactly the same, but it's close. 
 
 ```{r}
-microbenchmark::microbenchmark({irlba::irlba(M_regressed, 5)}, times = 10)
-microbenchmark::microbenchmark({RandomSVDLazyMatrix(M_regressed_lazy, 5)}, times = 10)
+mb({irlba::irlba(M_regressed, 5)}, times = 10)
+mb({RandomSVDLazyMatrix(M_regressed_lazy, 5)}, times = 10)
 svd_regular = irlba::irlba(M_regressed, 5)
 svd_lazy    = RandomSVDLazyMatrix(M_regressed_lazy, 5)
 plot( svd_regular$u[, 1], svd_lazy$u[, 1] )

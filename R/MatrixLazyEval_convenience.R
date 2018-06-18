@@ -4,11 +4,10 @@
 #' Do a low-rank update to a matrix.
 #'
 #' @param M Any matrix with a multiplication operator defined. Usually from the Matrix package.
-#' @param L,R  Matrices with dimensions such that \math{M - LR} works.
+#' @param L,R  Matrices with dimensions such that $$M - LR$$ works.
 #'
 #' @export
 #'
-#' @details This function returns a LazyMatrix representing \math{M - LR}.
 #' The update doesn't actually have to be low-rank, but if L and R are too big
 #' you may not gain any efficiency.
 #'
@@ -55,12 +54,10 @@ CenterLazily = function( M, do_rows = T ){
 #' @param M Any matrix with a multiplication operator defined. Usually from the Matrix package.
 #' @param X This must be some sort of typical matrix such that \code{solve(t(X) \%*\% X)} works.
 #'
-#' @export
-#'
 #' @details This function returns a LazyMatrix representing the residuals after regressing M on X.
 #' If X is too big, though, you may not gain any efficiency.
 #'
-#' @noMd
+#' @export
 #'
 RegressOutLazily = function( M, X ){
   XtXinv = solve(t(X) %*% X)
@@ -106,7 +103,7 @@ ScaleLazily = function( M, do_rows = T, desired_sum = 1 ){
 #' @param ncomp number of components to compute
 #' @param nproj_left  dimension of random column space to project into
 #' @param nproj_right dimension of random row    space to project into
-#' @param n_iter_spectrum_flatten How many times to multiply by \math{M^TM} to emphasize the larger
+#' @param n_iter_spectrum_flatten How many times to multiply by \eqn{M^TM} to emphasize the larger
 #' singular values when forming the projectors. If you don't know what this is, don't change it.
 #'
 #' @export
