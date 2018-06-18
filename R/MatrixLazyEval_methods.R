@@ -103,32 +103,24 @@ idx_types = c("integer", "logical")
 for( i_type in idx_types){
   for( j_type in idx_types){
     ## select both
-    #' Access elements of a LazyMatrix.
-    #'
     setMethod("[", signature(x = "LazyMatrix",
                              i = i_type, j = j_type, drop = "ANY"),
               function (x, i = 1:nrow(x), j = 1:ncol(x), ..., drop) {
                 ExtractElementsLazyMatrix( x, i, j, ...,  drop )
               })
     ## select rows
-    #' Access elements of a LazyMatrix.
-    #'
     setMethod("[", signature(x = "LazyMatrix", i = i_type, j = "missing",
                              drop = "ANY"),
               function(x,i,j, ..., drop=TRUE) {
                 ExtractElementsLazyMatrix( x, i = i,  drop = drop )
               })
     ## select columns
-    #' Access elements of a LazyMatrix.
-    #'
     setMethod("[", signature(x = "LazyMatrix", i = "missing", j = j_type,
                              drop = "ANY"),
               function(x,i,j, ..., drop=TRUE) {
                 ExtractElementsLazyMatrix( x, j = j,  drop = drop )
               })
     ## select neither
-    #' Access elements of a LazyMatrix.
-    #'
     setMethod("[", signature(x = "LazyMatrix", i = "missing", j = "missing",
                              drop = "ANY"),
               function(x,i,j, ..., drop=TRUE) {
@@ -139,7 +131,7 @@ for( i_type in idx_types){
 }
 
 ## Send message if any of (i,j,drop) is garbage
-#' Abdicate responsibility for weird multiplication requests.
+#' Abdicate responsibility for weird subsetting requests.
 #'
 setMethod("[", signature(x = "LazyMatrix", i = "ANY", j = "ANY", drop = "ANY"),
           function(x,i,j, ..., drop)
