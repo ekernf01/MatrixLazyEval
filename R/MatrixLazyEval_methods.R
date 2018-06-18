@@ -25,24 +25,54 @@ setClass("LazyMatrix", representation(components    = "list",
 # Code template
 # setMethod( "func_name", signature(x = "LazyMatrix"), function(M) coolStuff(M) )
 
-
+#' What size is my matrix?
+#'
 setMethod( "dim",  signature(x = "LazyMatrix"), function(x) x@dim )
-setMethod( "nrow", signature(x = "LazyMatrix"), function(x) dim(x)[1] )
-setMethod( "ncol", signature(x = "LazyMatrix"), function(x) dim(x)[2] )
-dim_or_zero = function(X) {
-  if(is.null(dim(X))){return(c(0,0))}
-  return(dim(X))
-}
-setMethod( "summary", signature(object = "LazyMatrix"), function(object) t(sapply(object@components, dim_or_zero)))
 
+#' How tall is my matrix?
+#'
+setMethod( "nrow", signature(x = "LazyMatrix"), function(x) dim(x)[1] )
+
+#' How wide is my matrix?
+#'
+setMethod( "ncol", signature(x = "LazyMatrix"), function(x) dim(x)[2] )
+
+#' Show a few details on a LazyMatrix.
+#'
+setMethod( "summary", signature(object = "LazyMatrix"), function(object) {
+  cat("\nComponent dimensions:\n")
+  do_one = function(X) {tryCatch(dim(X), error = function(e) {c(0,0)})}
+  print(funprog::Reduce(rbind, lapply(object@components, do_one)))
+  cat("\nEvaluation rule:\n", object@eval_rule, "\n")
+})
+
+#' Get sums of rows for LazyMatrix.
+#'
 setMethod( "rowSums", signature(x = "LazyMatrix"), function( x ) x %*% rep( 1, ncol( x ) )       )
+
+#' Get sums of columns for LazyMatrix.
+#'
 setMethod( "colSums", signature(x = "LazyMatrix"), function( x )       rep( 1, nrow( x ) ) %*% x )
 
+
+#' Get means of rows for LazyMatrix.
+#'
 setMethod( "rowMeans", signature(x = "LazyMatrix"), function( x ) rowSums( x ) / ncol( x ) )
+
+
+#' Get means of columns for LazyMatrix.
+#'
 setMethod( "colMeans", signature(x = "LazyMatrix"), function( x ) colSums( x ) / nrow( x ) )
 
+
+#' Multiply a LazyMatrix by a regular hard-working matrix.
+#'
 setMethod("%*%", signature(x = "LazyMatrix", y = "ANY"       ), function(x, y) EvaluateLazyMatrix( x, RIGHT = y ) )
 setMethod("%*%", signature(x = "ANY",        y = "LazyMatrix"), function(x, y) EvaluateLazyMatrix( y, LEFT = x ) )
+
+
+#' Combine two LazyMatrices into another LazyMatrix.
+#'
 setMethod("%*%", signature(x = "LazyMatrix", y = "LazyMatrix"),
           function(x, y)  {
             NewLazyMatrix( components = list( x=x, y=y ),
@@ -53,7 +83,13 @@ setMethod("%*%", signature(x = "LazyMatrix", y = "LazyMatrix"),
                            test = F )
           }
 )
+
+#' Transpose a LazyMatrix, lazily.
+#'
 setMethod("t",   signature(x = "LazyMatrix"), function( x ) TransposeLazyMatrix( x ) )
+
+#' tcrossprod a LazyMatrix, lazily.
+#'
 setMethod("tcrossprod",   signature(x = "LazyMatrix", y = "missing"),
           function( x ) {
             NewLazyMatrix( components = list("X" = x),
@@ -67,24 +103,32 @@ idx_types = c("integer", "logical")
 for( i_type in idx_types){
   for( j_type in idx_types){
     ## select both
+    #' Access elements of a LazyMatrix.
+    #'
     setMethod("[", signature(x = "LazyMatrix",
                              i = i_type, j = j_type, drop = "ANY"),
               function (x, i = 1:nrow(x), j = 1:ncol(x), ..., drop) {
                 ExtractElementsLazyMatrix( x, i, j, ...,  drop )
               })
     ## select rows
+    #' Access elements of a LazyMatrix.
+    #'
     setMethod("[", signature(x = "LazyMatrix", i = i_type, j = "missing",
                              drop = "ANY"),
               function(x,i,j, ..., drop=TRUE) {
                 ExtractElementsLazyMatrix( x, i = i,  drop = drop )
               })
-    ## select rows
+    ## select columns
+    #' Access elements of a LazyMatrix.
+    #'
     setMethod("[", signature(x = "LazyMatrix", i = "missing", j = j_type,
                              drop = "ANY"),
               function(x,i,j, ..., drop=TRUE) {
                 ExtractElementsLazyMatrix( x, j = j,  drop = drop )
               })
     ## select neither
+    #' Access elements of a LazyMatrix.
+    #'
     setMethod("[", signature(x = "LazyMatrix", i = "missing", j = "missing",
                              drop = "ANY"),
               function(x,i,j, ..., drop=TRUE) {
@@ -95,6 +139,8 @@ for( i_type in idx_types){
 }
 
 ## Send message if any of (i,j,drop) is garbage
+#' Abdicate responsibility for weird multiplication requests.
+#'
 setMethod("[", signature(x = "LazyMatrix", i = "ANY", j = "ANY", drop = "ANY"),
           function(x,i,j, ..., drop)
             stop("invalid or not-yet-implemented 'LazyMatrix' subsetting"))
