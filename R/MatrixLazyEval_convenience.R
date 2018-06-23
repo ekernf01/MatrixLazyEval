@@ -80,14 +80,14 @@ RegressOutLazily = function( M, X ){
 ScaleLazily = function( M, do_rows = T, desired_sum = 1 ){
   if( do_rows ){
     M_ones  = rep( 1, ncol( M ) )
-    M_sums = M %*% M_ones
+    M_sums = as.vector(M %*% M_ones)
     rescaler = Matrix::Diagonal( x = desired_sum / M_sums )
     return( NewLazyMatrix( components = list(M = M, rescaler = rescaler ),
                            eval_rule = "rescaler %*% M",
                            dim = dim( M ) ) )
   } else {
     M_ones  = rep( 1, nrow( M ) )
-    M_sums = M_ones %*% M
+    M_sums = as.vector(M_ones %*% M)
     rescaler = Matrix::Diagonal( x = desired_sum / M_sums )
     return( NewLazyMatrix( components = list(M = M, rescaler = rescaler ),
                            eval_rule = "M %*% rescaler",
