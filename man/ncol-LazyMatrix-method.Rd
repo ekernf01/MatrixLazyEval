@@ -7,6 +7,9 @@
 \usage{
 \S4method{ncol}{LazyMatrix}(x)
 }
+\arguments{
+\item{x}{LazyMatrix}
+}
 \description{
 How wide is my matrix?
 }

@@ -7,6 +7,9 @@
 \usage{
 \S4method{rowMeans}{LazyMatrix}(x)
 }
+\arguments{
+\item{x}{LazyMatrix}
+}
 \description{
 Get means of rows for LazyMatrix.
 }

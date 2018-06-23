@@ -4,7 +4,7 @@
 \alias{ExtractElementsLazyMatrix}
 \title{Evaluate elements of a LazyMatrix.}
 \usage{
-ExtractElementsLazyMatrix(M, i = 1:nrow(M), j = 1:ncol(M), drop = T)
+ExtractElementsLazyMatrix(M, i, j, drop = T)
 }
 \arguments{
 \item{M}{LazyMatrix}

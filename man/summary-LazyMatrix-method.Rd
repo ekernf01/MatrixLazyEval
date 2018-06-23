@@ -7,6 +7,9 @@
 \usage{
 \S4method{summary}{LazyMatrix}(object)
 }
+\arguments{
+\item{object}{LazyMatrix}
+}
 \description{
 Show a few details on a LazyMatrix.
 }

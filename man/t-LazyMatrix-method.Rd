@@ -7,6 +7,9 @@
 \usage{
 \S4method{t}{LazyMatrix}(x)
 }
+\arguments{
+\item{x}{LazyMatrix}
+}
 \description{
 Transpose a LazyMatrix, lazily.
 }

@@ -6,12 +6,11 @@
 #' @param M Any matrix with a multiplication operator defined. Usually from the Matrix package.
 #' @param L,R  Matrices with dimensions such that $$M - LR$$ works.
 #'
-#' @export
-#'
 #' The update doesn't actually have to be low-rank, but if L and R are too big
 #' you may not gain any efficiency.
 #'
 #' @noMd
+#' @export
 #'
 RankOneUpdateLazily = function( M, L, R ){
   if(is.vector(L)){ L = matrix(L, nrow = length(L)) }

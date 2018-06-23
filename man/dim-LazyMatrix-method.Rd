@@ -7,6 +7,9 @@
 \usage{
 \S4method{dim}{LazyMatrix}(x)
 }
+\arguments{
+\item{x}{LazyMatrix}
+}
 \description{
 What size is my matrix?
 }

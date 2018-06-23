@@ -9,7 +9,10 @@ RankOneUpdateLazily(M, L, R)
 \arguments{
 \item{M}{Any matrix with a multiplication operator defined. Usually from the Matrix package.}
 
-\item{L, R}{Matrices with dimensions such that $$M - LR$$ works.}
+\item{L, R}{Matrices with dimensions such that $$M - LR$$ works.
+
+The update doesn't actually have to be low-rank, but if L and R are too big
+you may not gain any efficiency.}
 }
 \description{
 Do a low-rank update to a matrix.

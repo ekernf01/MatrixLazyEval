@@ -7,6 +7,9 @@
 \usage{
 \S4method{\%*\%}{LazyMatrix,LazyMatrix}(x, y)
 }
+\arguments{
+\item{x, y}{LazyMatrix}
+}
 \description{
 Combine two LazyMatrices into another LazyMatrix.
 }

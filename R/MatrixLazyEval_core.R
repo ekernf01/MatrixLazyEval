@@ -224,7 +224,9 @@ ExtendLazyMatrix = function( M, LEFT = NULL, RIGHT = NULL ){
 #'
 #' @export
 #'
-ExtractElementsLazyMatrix = function( M, i = 1:nrow(M), j = 1:ncol(M), drop = T ){
+ExtractElementsLazyMatrix = function( M, i, j, drop = T ){
+  if(missing(i)){i = 1:nrow(M) }
+  if(missing(j)){j = 1:ncol(M) }
   result = EvaluateLazyMatrix( M,
                                LEFT  = Matrix::Diagonal(1, n = nrow(M))[i, ],
                                RIGHT = Matrix::Diagonal(1, n = ncol(M))[, j] )

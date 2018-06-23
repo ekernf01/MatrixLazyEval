@@ -3,10 +3,15 @@
 \docType{methods}
 \name{[,LazyMatrix,ANY,ANY,ANY-method}
 \alias{[,LazyMatrix,ANY,ANY,ANY-method}
-\title{Abdicate responsibility for weird multiplication requests.}
+\title{Abdicate responsibility for weird subsetting requests.}
 \usage{
-\S4method{[}{LazyMatrix,ANY,ANY,ANY}(x, i, j, ..., drop = TRUE)
+\S4method{[}{LazyMatrix,ANY,ANY,ANY}(x, i, j, drop)
+}
+\arguments{
+\item{x}{LazyMatrix If this ain't a lazy matrix, this method ain't gettin' dispatched.}
+
+\item{i, j, drop}{This failnice method gets dispatched if these args are not integer or logical (also, integer disallowed for drop).}
 }
 \description{
-Abdicate responsibility for weird multiplication requests.
+Abdicate responsibility for weird subsetting requests.
 }

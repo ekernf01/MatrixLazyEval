@@ -7,6 +7,9 @@
 \usage{
 \S4method{tcrossprod}{LazyMatrix,missing}(x)
 }
+\arguments{
+\item{x}{LazyMatrix}
+}
 \description{
 tcrossprod a LazyMatrix, lazily.
 }

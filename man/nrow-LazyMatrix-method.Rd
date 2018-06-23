@@ -7,6 +7,9 @@
 \usage{
 \S4method{nrow}{LazyMatrix}(x)
 }
+\arguments{
+\item{x}{LazyMatrix}
+}
 \description{
 How tall is my matrix?
 }

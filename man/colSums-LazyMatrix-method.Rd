@@ -7,6 +7,9 @@
 \usage{
 \S4method{colSums}{LazyMatrix}(x)
 }
+\arguments{
+\item{x}{LazyMatrix}
+}
 \description{
 Get sums of columns for LazyMatrix.
 }
