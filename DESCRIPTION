@@ -6,8 +6,8 @@ Author: Eric Kernfeld
 Maintainer: The package maintainer <eric.kern13@gmail.com>
 Description: MatrixLazyEval lets you perform operations cheaply with large sparse matrices.  
     For example, you can subtract the mean (or predictions from an OLS regression) from each 
-    row or column without explicitly storing the resulting dense matrix. You can go on to 
-    compute e.g. and SVD of the result.
+    row or column without explicitly storing the resulting (dense) matrix. You can go on to 
+    compute e.g. an SVD of the result.
 License: GPL-3 | file LICENSE
 Encoding: UTF-8
 LazyData: true
