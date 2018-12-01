@@ -1,7 +1,7 @@
 context("demo")
 rm(list = ls())
 
-
+library(MatrixLazyEval)
 library(Matrix)
 data(CAex)
 M = rbind(CAex, CAex)

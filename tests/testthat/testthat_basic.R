@@ -3,6 +3,7 @@ rm(list = ls())
 context("basics")
 
 library(Matrix)
+library(MatrixLazyEval)
 data(CAex)
 M = rbind(CAex, CAex)
 
@@ -10,6 +11,9 @@ M_lazy = NewLazyMatrix( components = list("M" = M ),
                         dim = dim(M),
                         eval_rule  = "M", test = F )
 
+testthat::test_that("AsLazyMatrix works", {
+  expect_silent( AsLazyMatrix(M) )
+})
 
 M_lazy_layered = NewLazyMatrix( components = list("M" = M_lazy ),
                                 dim = dim(M),

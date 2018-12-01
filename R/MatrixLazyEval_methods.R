@@ -13,6 +13,8 @@
 #'  Like with typical R syntax, asterisk (*) means componentwise multiplication, and wrapped in percents
 #'   (\code{\%*\%}) it means matrix multiplication.
 #'
+#' @export
+#'
 #'
 setClass("LazyMatrix", representation(components    = "list",
                                       dim           = "integer",
@@ -20,7 +22,27 @@ setClass("LazyMatrix", representation(components    = "list",
 
 
 
+#' Convert matrix or Matrix or similar to LazyMatrix
+#'
+#' @param X regular matrix
+#'
+#' @export
+#'
+AsLazyMatrix = function(X)  {
+  NewLazyMatrix( components = list( X = X ),
+                 dim = c( nrow(X),
+                          ncol(X) ),
+                 eval_rule = " X " ,
+                 test = F )
+}
 
+#' Alias for AsLazyMatrix.
+#'
+#' @param X regular matrix
+#'
+#' @export
+#'
+NewLazyMatrixEasy = AsLazyMatrix
 
 # Code template
 # setMethod( "func_name", signature(x = "LazyMatrix"), function(M) coolStuff(M) )
@@ -35,17 +57,23 @@ setMethod( "dim",  signature(x = "LazyMatrix"), function(x) x@dim )
 #'
 #' @param x LazyMatrix
 #'
+#' @export
+#'
 setMethod( "nrow", signature(x = "LazyMatrix"), function(x) dim(x)[1] )
 
 #' How wide is my matrix?
 #'
 #' @param x LazyMatrix
 #'
+#' @export
+#'
 setMethod( "ncol", signature(x = "LazyMatrix"), function(x) dim(x)[2] )
 
 #' Show a few details on a LazyMatrix.
 #'
 #' @param object LazyMatrix
+#'
+#' @export
 #'
 setMethod( "summary", signature(object = "LazyMatrix"), function(object) {
   cat("\nComponent dimensions:\n")
@@ -58,11 +86,15 @@ setMethod( "summary", signature(object = "LazyMatrix"), function(object) {
 #'
 #' @param x LazyMatrix
 #'
+#' @export
+#'
 setMethod( "rowSums", signature(x = "LazyMatrix"), function( x ) x %*% rep( 1, ncol( x ) )       )
 
 #' Get sums of columns for LazyMatrix.
 #'
 #' @param x LazyMatrix
+#'
+#' @export
 #'
 setMethod( "colSums", signature(x = "LazyMatrix"), function( x )       rep( 1, nrow( x ) ) %*% x )
 
@@ -71,6 +103,8 @@ setMethod( "colSums", signature(x = "LazyMatrix"), function( x )       rep( 1, n
 #'
 #' @param x LazyMatrix
 #'
+#' @export
+#'
 setMethod( "rowMeans", signature(x = "LazyMatrix"), function( x ) rowSums( x ) / ncol( x ) )
 
 
@@ -78,27 +112,33 @@ setMethod( "rowMeans", signature(x = "LazyMatrix"), function( x ) rowSums( x ) /
 #'
 #' @param x LazyMatrix
 #'
+#' @export
+#'
 setMethod( "colMeans", signature(x = "LazyMatrix"), function( x ) colSums( x ) / nrow( x ) )
 
 
 #' Multiply a LazyMatrix by a regular hard-working matrix.
 #'
 #' @param x LazyMatrix
-#'
 #' @param y Anything with a matrix multiplication method that accepts objects in the components slot of x.
+#' @export
+#'
 setMethod("%*%", signature(x = "LazyMatrix", y = "ANY"       ), function(x, y) EvaluateLazyMatrix( x, RIGHT = y ) )
 
 #' Multiply a LazyMatrix by a regular hard-working matrix.
 #'
 #' @param y LazyMatrix
-#'
 #' @param x Anything with a matrix multiplication method that accepts objects in the components slot of y.
+#' @export
+#'
 setMethod("%*%", signature(x = "ANY",        y = "LazyMatrix"), function(x, y) EvaluateLazyMatrix( y, LEFT = x ) )
 
 
 #' Combine two LazyMatrices into another LazyMatrix.
 #'
 #' @param x,y LazyMatrix
+#'
+#' @export
 #'
 setMethod("%*%", signature(x = "LazyMatrix", y = "LazyMatrix"),
           function(x, y)  {
@@ -115,11 +155,15 @@ setMethod("%*%", signature(x = "LazyMatrix", y = "LazyMatrix"),
 #'
 #' @param x LazyMatrix
 #'
+#' @export
+#'
 setMethod("t",   signature(x = "LazyMatrix"), function( x ) TransposeLazyMatrix( x ) )
 
 #' tcrossprod a LazyMatrix, lazily.
 #'
 #' @param x LazyMatrix
+#'
+#' @export
 #'
 setMethod("tcrossprod",   signature(x = "LazyMatrix", y = "missing"),
           function( x ) {
@@ -172,6 +216,8 @@ for( i_type in idx_types){
 #'
 #' @param x LazyMatrix If this ain't a lazy matrix, this method ain't gettin' dispatched.
 #' @param i,j,drop This failnice method gets dispatched if these args are not integer or logical (also, integer disallowed for drop).
+#'
+#' @export
 #'
 setMethod("[", signature(x = "LazyMatrix", i = "ANY", j = "ANY", drop = "ANY"),
           function(x,i,j, drop)

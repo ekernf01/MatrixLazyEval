@@ -3,6 +3,8 @@ rm(list = ls())
 context("convenience")
 
 library(Matrix)
+library(MatrixLazyEval)
+
 data(CAex)
 M = rbind(CAex, CAex)
 M = matrix(stats::rnorm(prod(dim(M))), nrow = nrow(M))
