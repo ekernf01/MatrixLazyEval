@@ -1,15 +1,14 @@
-rm(list = ls())
 
 context("basics")
 
 library(Matrix)
-library(MatrixLazyEval)
 data(CAex)
 M = rbind(CAex, CAex)
 
 M_lazy = NewLazyMatrix( components = list("M" = M ),
                         dim = dim(M),
                         eval_rule  = "M", test = F )
+
 
 testthat::test_that("AsLazyMatrix works", {
   expect_silent( AsLazyMatrix(M) )
@@ -66,10 +65,20 @@ test_that("evaluate_works_when_layered", {
   }
 })
 
+
+testthat::test_that("transpose method exists", {
+  transpose_methods =
+    capture_output(showMethods("t")) %>%
+    strsplit("\nx=") %>%
+    unlist %>%
+    gsub("[^[:alnum:]=\\.]", "", .)
+  expect_true( "LazyMatrix" %in% transpose_methods )
+} )
+
+
 test_that("transpose_runs", {
   expect_equal(t(M_lazy), t(M_lazy))
 })
-
 
 test_that("transpose_works", {
   expect_equal( t(M_lazy)[1:5, 1:5], t(M)[1:5, 1:5] )

@@ -120,7 +120,6 @@ RandomSVDLazyMatrix = function( M, ncomp = 5,
   seed_for_right = matrix( stats::rnorm( nproj_right * dim( M )[1] ), ncol = nproj_right )
   seed_for_left  = qr.Q(qr(seed_for_left))
   seed_for_right = qr.Q(qr(seed_for_right))
-
   for( ii in 1:n_iter_spectrum_flatten){
     seed_for_left  = t(M) %*% (M %*% seed_for_left)
     seed_for_right = M %*% (t(M) %*% seed_for_right)

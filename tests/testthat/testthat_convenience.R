@@ -1,9 +1,5 @@
-rm(list = ls())
 
 context("convenience")
-
-library(Matrix)
-library(MatrixLazyEval)
 
 data(CAex)
 M = rbind(CAex, CAex)

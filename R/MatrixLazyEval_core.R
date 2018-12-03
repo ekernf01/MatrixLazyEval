@@ -1,4 +1,4 @@
-requireNamespace("Matrix")
+
 
 #' Return an empty LazyMatrix.
 #'
@@ -76,7 +76,7 @@ EvaluateLazyMatrix = function( M,
                                RIGHT  = Matrix::Diagonal(1, n = ncol(M) ) ){
   M@components$LEFT = LEFT
   M@components$RIGHT = RIGHT
-  eval(parse(text=M@eval_rule), envir = M@components)
+  eval(parse(text=M@eval_rule), envir = M@components, enclos = globalenv())
 }
 
 
