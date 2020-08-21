@@ -1,4 +1,17 @@
-This is an R package for lazy evaluation of matrices. Please check out the vignette for examples. In brief: 
+This is an R package for "lazy evaluation" of matrices. 
+
+The idea is to be careful about order of operations. Suppose you have a 60,000 by 30,000 sparse matrix X with 1% of the entries nonzero (haphazardly distributed, not in orderly patterns). You want to center each column of X to form Z, then compute Zv for some vector v. If you center the columns naively, almost none of the zeroes will be preserved. Your matrix will be dense, and that will occupy **>14GB of memory** (1.8e9 doubles; 8 bytes per double). To avoid this, you can compute `(Xv) - 1*(m*v)`, where m is a row vector containing the column means of X. 
+
+Similar tricks can often help economize when you:
+
+- scale rows/colums
+- shift rows/columns
+- extract residuals after linear regression
+- multiply matrices
+- compose multiple such operations
+- perform approximate PCA and SVD's
+
+This `R` package defines convenient interfaces to these operations via a "LazyMatrix" class. Please check out the vignette for examples. In brief: 
 
 ```    R
 library(Matrix)
