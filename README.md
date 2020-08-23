@@ -1,6 +1,6 @@
 This is an R package for "lazy evaluation" of matrices. 
 
-The idea is to be careful about order of operations. Suppose you have a 60,000 by 30,000 sparse matrix X with 1% of the entries nonzero (haphazardly distributed, not in orderly patterns). You want to center each column of X to form Z, then compute Zv for some vector v. If you center the columns naively, almost none of the zeroes will be preserved. Your matrix will be dense, and it will occupy **>14GB of memory** (1.8e9 doubles; 8 bytes per double). To avoid this, you can compute `(Xv) - 1*(m*v)`, where m is a row vector containing the column means of X. 
+The idea is to be careful about order of operations. Suppose you have a 60,000 by 30,000 sparse matrix X with 1% of the entries nonzero (haphazardly distributed, not in orderly patterns). You want to center each column of X to form Z, then compute Zv for some vector v. If you center the columns naively, almost none of the zeroes will be preserved. Your matrix will be dense, and it will occupy **>14GB of memory** (1.8e9 doubles; 8 bytes per double). To avoid this, you can compute `(Xv) - 1*(m*v)`, where m is a row vector containing the column means of X. This is "lazy" because by default, it waits for a task before doing any calculations.
 
 Similar tricks can often help economize when you:
 
