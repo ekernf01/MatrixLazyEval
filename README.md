@@ -19,7 +19,7 @@ Similar tricks can often help economize when you:
 
 ##### Examples
 
-This `R` package defines convenient interfaces to these operations via a "LazyMatrix" class. Please check out the vignette for examples. In brief: 
+This `R` package defines convenient interfaces to these operations via a "LazyMatrix" class. The usual operations are overloaded, so you can still use `%*%`, `t()`, and `tcrossprod()`.  Check out the vignette for examples. In brief: 
 
 ```    R
 # Install
