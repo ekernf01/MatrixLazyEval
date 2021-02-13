@@ -43,7 +43,18 @@ summary(M_lazy_centered)
 my_rsvd = RandomSVDLazyMatrix(M_lazy_centered)
 ```
 
+##### Related work
 
+This package is very similar in spirit to the newer DelayedArray package: https://bioconductor.org/packages/release/bioc/html/DelayedArray.html . However, the functionality is very different, making the two packages nicely complementary. DelayedArray offers fine-grained control over data types and when/how data get loaded into memory (they are much more sophisticated coders than I am). They make no mention of PCA/SVD or of the associativity tricks that make MatrixLazyEval efficient. Borrowing from their vignette, here is a little demo of how the two packages can be used in tandem to realize both sources of efficiency.
 
-​    
+```
+# You'll need to install DelayedArray. 
+# BiocManager::install("DelayedArray")
+library(DelayedArray)
+M_delayed = as(CAex, "RleMatrix")
+M_lazy_and_delayed = NewLazyMatrix(list(X = M_delayed), eval_rule = "X", dim = dim(M_delayed))
+M_ld_scaled = ScaleLazily(M_lazy_and_delayed, do_rows = F, desired_sum = 1e4)
+M_ld_centered = RegressOutLazily(M_ld_scaled, rep(1, ncol(M_ld_scaled)))
+my_rsvd = RandomSVDLazyMatrix(M_ld_centered)
+```  
 
