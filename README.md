@@ -56,5 +56,8 @@ M_lazy_and_delayed = NewLazyMatrix(list(X = M_delayed), eval_rule = "X", dim = d
 M_ld_scaled = ScaleLazily(M_lazy_and_delayed, do_rows = F, desired_sum = 1e4)
 M_ld_centered = RegressOutLazily(M_ld_scaled, rep(1, ncol(M_ld_scaled)))
 my_rsvd = RandomSVDLazyMatrix(M_ld_centered)
+
+# Look all the way down and you find a DelayedArray inside!
+M_ld_centered@components$M@components$M@components$X
 ```  
 
