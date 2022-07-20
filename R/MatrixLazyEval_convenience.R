@@ -1,10 +1,12 @@
 
 
 
-#' Do a low-rank update to a matrix.
+#' Do a low-rank update to a matrix. 
 #'
 #' @param M Any matrix with a multiplication operator defined. Usually from the Matrix package.
 #' @param L,R  Matrices with dimensions such that $$M - LR$$ works.
+#'
+#' This method is LAZY -- calculations are put off until later, not triggered by calling this function.
 #'
 #' The update doesn't actually have to be low-rank, but if L and R are too big
 #' you may not gain any efficiency.
@@ -29,6 +31,8 @@ RankOneUpdateLazily = function( M, L, R ){
 #' @param M Any matrix with a multiplication operator and nrow/ncol methods defined. Usually from the Matrix package.
 #' @param do_rows If true, the rows are centered so every row has mean 0.
 #' If false, the columns are centered so every column has mean 0.
+#'
+#' This method is LAZY -- calculations are put off until later, not triggered by calling this function.
 #'
 #' @export
 #'
@@ -56,6 +60,8 @@ CenterLazily = function( M, do_rows = T ){
 #' @details This function returns a LazyMatrix representing the residuals after regressing M on X.
 #' If X is too big, though, you may not gain any efficiency.
 #'
+#' This method is LAZY -- calculations are put off until later, not triggered by calling this function.
+#'
 #' @export
 #'
 RegressOutLazily = function( M, X ){
@@ -73,6 +79,8 @@ RegressOutLazily = function( M, X ){
 #' @param desired_sum Desired sum for each row or column.
 #' @param do_rows If true, the rows are scaled so every row has the desired sum.
 #' If false, the columns are centered so every column has the desired sum.
+#'
+#' This method is LAZY -- calculations are put off until later, not triggered by calling this function.
 #'
 #' @export
 #'
@@ -106,6 +114,8 @@ ScaleLazily = function( M, do_rows = T, desired_sum = 1 ){
 #' singular values when forming the projectors. If you don't know what this is, don't change it.
 #'
 #' @export
+#'
+#' This method is LAZY -- calculations are put off until later, not triggered by calling this function.
 #'
 #' @noMd
 #'

@@ -4,13 +4,18 @@
 \alias{EvaluateLazyMatrix}
 \title{Compute a matrix product.}
 \usage{
-EvaluateLazyMatrix(M, LEFT = Matrix::Diagonal(1, n = nrow(M)),
-  RIGHT = Matrix::Diagonal(1, n = ncol(M)))
+EvaluateLazyMatrix(
+  M,
+  LEFT = Matrix::Diagonal(1, n = nrow(M)),
+  RIGHT = Matrix::Diagonal(1, n = ncol(M))
+)
 }
 \arguments{
 \item{M}{object of class LazyMatrix.}
 
-\item{LEFT}{x in xMy.}
+\item{LEFT}{x in xMy.
+
+This method is EAGER -- it triggers calculations immediately.}
 
 \item{RIGHT}{y in xMy.}
 }

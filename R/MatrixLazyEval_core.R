@@ -4,7 +4,7 @@ requireNamespace("Matrix")
 #'
 #' @param components Named list containing matrices. Anything with a matrix multiplication operator ought to work.
 #' Notably, you can put another instance of LazyMatrixEval.
-#' Names should come out unscathed when you do \code{make.names} to them.
+#' Names must come out unscathed when you do \code{make.names} to them.
 #' @param dim Length-2 integer vector giving dimensions of final object.
 #' @param eval_rule Length-1 character describing how to compute Mx or yM for this matrix (M) given x or y.
 #' @param test Logical. If TRUE (default), object is tested immediately upon initialization.
@@ -69,6 +69,8 @@ IsLazyMatrix = function(x) {
 #' @param RIGHT y in xMy.
 #' @param LEFT x in xMy.
 #'
+#' This method is EAGER -- it triggers calculations immediately.
+#'
 #' @export
 #'
 EvaluateLazyMatrix = function( M,
@@ -110,7 +112,8 @@ HasValidRuleLazyMatrix = function(M){
 #' @export
 #'
 #' @details
-#' This does no more than make sure a quadratic form can be computed and that it yields a scalar as expected.
+#' 
+#' This makes sure matrix-vector products can be computed and yield the correct shape of results.
 #'
 TestLazyMatrix = function( M, seed = 0 ){
   set.seed(seed)
@@ -122,8 +125,8 @@ TestLazyMatrix = function( M, seed = 0 ){
   return()
 }
 
-# Since L M^T R = (R^T M L^T)^T}, can replace every occurence of LEFT
-#  with t(RIGHT) and vice versa, then transpose everything at the end.
+# Since L M^T R = (R^T M L^T)^T}, we can lazily transpose by replacing every occurrence of LEFT
+#  with t(RIGHT) and vice versa, then handle the meat of the sandwich recursively.
 TransposeRule = function( eval_rule ){
   eval_rule = gsub( "LEFT", "TRANSPOSE_TEMP",     eval_rule )
   eval_rule = gsub( "RIGHT", "t(LEFT)",           eval_rule )
@@ -138,6 +141,8 @@ TransposeRule = function( eval_rule ){
 #'
 #' @export
 #'
+#' This method is LAZY -- it defers calculations for later rather than evaluating immediately.
+#'
 TransposeLazyMatrix = function( M ){
   M@dim = rev(M@dim)
   M@eval_rule = TransposeRule(M@eval_rule)
@@ -147,15 +152,17 @@ TransposeLazyMatrix = function( M ){
 }
 
 
-#' Extend a LazyMatrix matrix M symbolically, without performing any calculations.
+#' Left- and right-multiply a LazyMatrix lazily, without performing any calculations.
 #'
-#' @param M LazyMatrix to be extended.
-#' @param LEFT,RIGHT Lists of matrices to pre- and post-multiply.
+#' @param M LazyMatrix to be multiplied
+#' @param LEFT,RIGHT Lists of matrices to left- and right-multiply into M.
 #' Everything is done left to right, so if these contain X, Y (LEFT) and Z, W (RIGHT), the result will represent
 #'  XYMZW . If these are not lists, they will be wrapped in lists and named using deparse(substitute()).
 #'
 #' @export
 #'
+#' This method is LAZY -- it defers calculations for later rather than evaluating immediately.
+#' 
 ExtendLazyMatrix = function( M, LEFT = NULL, RIGHT = NULL ){
   assertthat::assert_that( !is.null(LEFT)  | !is.null(RIGHT) )
   nm_L = deparse(substitute( LEFT  ))
@@ -221,6 +228,8 @@ ExtendLazyMatrix = function( M, LEFT = NULL, RIGHT = NULL ){
 #' @param M LazyMatrix
 #' @param i,j Integer vectors.
 #' @param drop If TRUE, return something 1d. Otherwise, return something 2d.
+#'
+#' This method is EAGER -- it triggers calculations immediately.
 #'
 #' @export
 #'

@@ -9,7 +9,7 @@ NewLazyMatrix(components, dim, eval_rule, test = T)
 \arguments{
 \item{components}{Named list containing matrices. Anything with a matrix multiplication operator ought to work.
 Notably, you can put another instance of LazyMatrixEval.
-Names should come out unscathed when you do \code{make.names} to them.}
+Names must come out unscathed when you do \code{make.names} to them.}
 
 \item{dim}{Length-2 integer vector giving dimensions of final object.}
 
