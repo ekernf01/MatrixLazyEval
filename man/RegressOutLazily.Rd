@@ -17,4 +17,6 @@ Replace a matrix with residuals from an OLS regression.
 \details{
 This function returns a LazyMatrix representing the residuals after regressing M on X.
 If X is too big, though, you may not gain any efficiency.
+
+This method is LAZY -- calculations are put off until later, not triggered by calling this function.
 }

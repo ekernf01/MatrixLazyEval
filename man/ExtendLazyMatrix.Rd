@@ -2,17 +2,17 @@
 % Please edit documentation in R/MatrixLazyEval_core.R
 \name{ExtendLazyMatrix}
 \alias{ExtendLazyMatrix}
-\title{Extend a LazyMatrix matrix M symbolically, without performing any calculations.}
+\title{Left- and right-multiply a LazyMatrix lazily, without performing any calculations.}
 \usage{
 ExtendLazyMatrix(M, LEFT = NULL, RIGHT = NULL)
 }
 \arguments{
-\item{M}{LazyMatrix to be extended.}
+\item{M}{LazyMatrix to be multiplied}
 
-\item{LEFT, RIGHT}{Lists of matrices to pre- and post-multiply.
+\item{LEFT, RIGHT}{Lists of matrices to left- and right-multiply into M.
 Everything is done left to right, so if these contain X, Y (LEFT) and Z, W (RIGHT), the result will represent
  XYMZW . If these are not lists, they will be wrapped in lists and named using deparse(substitute()).}
 }
 \description{
-Extend a LazyMatrix matrix M symbolically, without performing any calculations.
+Left- and right-multiply a LazyMatrix lazily, without performing any calculations.
 }

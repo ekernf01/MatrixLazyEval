@@ -15,5 +15,5 @@ TestLazyMatrix(M, seed = 0)
 Check matrix by computing xM, My, and xMy with random dense x, y.
 }
 \details{
-This does no more than make sure a quadratic form can be computed and that it yields a scalar as expected.
+This makes sure matrix-vector products can be computed and yield the correct shape of results.
 }

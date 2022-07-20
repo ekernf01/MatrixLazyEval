@@ -10,7 +10,9 @@ ScaleLazily(M, do_rows = T, desired_sum = 1)
 \item{M}{Any matrix with a multiplication operator and nrow/ncol methods defined. Usually from the Matrix package.}
 
 \item{do_rows}{If true, the rows are scaled so every row has the desired sum.
-If false, the columns are centered so every column has the desired sum.}
+If false, the columns are centered so every column has the desired sum.
+
+This method is LAZY -- calculations are put off until later, not triggered by calling this function.}
 
 \item{desired_sum}{Desired sum for each row or column.}
 }

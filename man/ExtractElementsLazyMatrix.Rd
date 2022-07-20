@@ -11,7 +11,9 @@ ExtractElementsLazyMatrix(M, i, j, drop = T)
 
 \item{i, j}{Integer vectors.}
 
-\item{drop}{If TRUE, return something 1d. Otherwise, return something 2d.}
+\item{drop}{If TRUE, return something 1d. Otherwise, return something 2d.
+
+This method is EAGER -- it triggers calculations immediately.}
 }
 \description{
 Evaluate elements of a LazyMatrix.

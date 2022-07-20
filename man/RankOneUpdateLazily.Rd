@@ -11,6 +11,8 @@ RankOneUpdateLazily(M, L, R)
 
 \item{L, R}{Matrices with dimensions such that $$M - LR$$ works.
 
+This method is LAZY -- calculations are put off until later, not triggered by calling this function.
+
 The update doesn't actually have to be low-rank, but if L and R are too big
 you may not gain any efficiency.}
 }

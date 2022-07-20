@@ -4,9 +4,13 @@
 \alias{RandomSVDLazyMatrix}
 \title{Compute randomized SVD.}
 \usage{
-RandomSVDLazyMatrix(M, ncomp = 5, n_iter_spectrum_flatten = 2,
-  nproj_left = min(8 * ncomp, dim(M)[1]), nproj_right = min(8 * ncomp,
-  dim(M)[2]))
+RandomSVDLazyMatrix(
+  M,
+  ncomp = 5,
+  n_iter_spectrum_flatten = 2,
+  nproj_left = min(8 * ncomp, dim(M)[1]),
+  nproj_right = min(8 * ncomp, dim(M)[2])
+)
 }
 \arguments{
 \item{M}{object of class LazyMatrix.}

@@ -57,12 +57,16 @@ setMethod( "summary", signature(object = "LazyMatrix"), function(object) {
 #' Get sums of rows for LazyMatrix.
 #'
 #' @param x LazyMatrix
+#' 
+#' This function is EAGER: it triggers immediate calculations.
 #'
 setMethod( "rowSums", signature(x = "LazyMatrix"), function( x ) x %*% rep( 1, ncol( x ) )       )
 
 #' Get sums of columns for LazyMatrix.
 #'
 #' @param x LazyMatrix
+#'
+#' This function is EAGER: it triggers immediate calculations.
 #'
 setMethod( "colSums", signature(x = "LazyMatrix"), function( x )       rep( 1, nrow( x ) ) %*% x )
 
@@ -71,6 +75,8 @@ setMethod( "colSums", signature(x = "LazyMatrix"), function( x )       rep( 1, n
 #'
 #' @param x LazyMatrix
 #'
+#' This function is EAGER: it triggers immediate calculations.
+#' 
 setMethod( "rowMeans", signature(x = "LazyMatrix"), function( x ) rowSums( x ) / ncol( x ) )
 
 
@@ -78,20 +84,26 @@ setMethod( "rowMeans", signature(x = "LazyMatrix"), function( x ) rowSums( x ) /
 #'
 #' @param x LazyMatrix
 #'
+#' This function is EAGER: it triggers immediate calculations.
+#' 
 setMethod( "colMeans", signature(x = "LazyMatrix"), function( x ) colSums( x ) / nrow( x ) )
 
 
-#' Multiply a LazyMatrix by a regular hard-working matrix.
+#' Multiply a LazyMatrix by another matrix-like object that supports \code{%*%}.
 #'
 #' @param x LazyMatrix
-#'
-#' @param y Anything with a matrix multiplication method that accepts objects in the components slot of x.
+#' @param y This object must be able to interact with objects in the components slot of x via the usual matrix multiplication operator.
+#' 
+#' This function is EAGER: it triggers immediate calculations.
+#' 
 setMethod("%*%", signature(x = "LazyMatrix", y = "ANY"       ), function(x, y) EvaluateLazyMatrix( x, RIGHT = y ) )
 
 #' Multiply a LazyMatrix by a regular hard-working matrix.
 #'
 #' @param y LazyMatrix
-#'
+#' 
+#' This function is EAGER: it triggers immediate calculations.
+#' 
 #' @param x Anything with a matrix multiplication method that accepts objects in the components slot of y.
 setMethod("%*%", signature(x = "ANY",        y = "LazyMatrix"), function(x, y) EvaluateLazyMatrix( y, LEFT = x ) )
 
@@ -99,6 +111,8 @@ setMethod("%*%", signature(x = "ANY",        y = "LazyMatrix"), function(x, y) E
 #' Combine two LazyMatrices into another LazyMatrix.
 #'
 #' @param x,y LazyMatrix
+#' 
+#' This function is LAZY: it defers calculations to later.
 #'
 setMethod("%*%", signature(x = "LazyMatrix", y = "LazyMatrix"),
           function(x, y)  {
@@ -115,12 +129,16 @@ setMethod("%*%", signature(x = "LazyMatrix", y = "LazyMatrix"),
 #'
 #' @param x LazyMatrix
 #'
+#' This function is LAZY: it defers calculations to later.
+#' 
 setMethod("t",   signature(x = "LazyMatrix"), function( x ) TransposeLazyMatrix( x ) )
 
 #' tcrossprod a LazyMatrix, lazily.
 #'
 #' @param x LazyMatrix
 #'
+#' This function is LAZY: it defers calculations to later.
+#' 
 setMethod("tcrossprod",   signature(x = "LazyMatrix", y = "missing"),
           function( x ) {
             NewLazyMatrix( components = list("X" = x),
@@ -167,11 +185,12 @@ for( i_type in idx_types){
   }
 }
 
-## Send message if any of (i,j,drop) is garbage
+## Send message if any of (i,j,drop) is invalid.
 #' Abdicate responsibility for weird subsetting requests.
 #'
-#' @param x LazyMatrix If this ain't a lazy matrix, this method ain't gettin' dispatched.
-#' @param i,j,drop This failnice method gets dispatched if these args are not integer or logical (also, integer disallowed for drop).
+#' @param x LazyMatrix 
+#' @param i,j,drop This failnice method gets dispatched if the methods above don't apply. 
+#' It happens if the args are not integer or logical (also, integer disallowed for drop).
 #'
 setMethod("[", signature(x = "LazyMatrix", i = "ANY", j = "ANY", drop = "ANY"),
           function(x,i,j, drop)
