@@ -1,3 +1,5 @@
+#' @importFrom Matrix t tcrossprod colSums rowMeans
+NULL
 
 #' LazyMatrix class.
 #'
